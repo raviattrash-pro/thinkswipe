@@ -38,7 +38,6 @@ jobs:
             --no-tablespaces \
             --skip-lock-tables \
             --skip-add-locks \
-            --no-create-info \
             --skip-add-drop-table \
             "$S_DB" > backup.sql
           test -s backup.sql
@@ -94,8 +93,8 @@ jobs:
         if: env.T_HOST != ''
         run: |
           echo "Syncing data to Secondary TiDB using Low-Permission Protocol..."
-          # Fix: Disable foreign key checks, Unzip, substitute INSERT with REPLACE, and pipe
-          gunzip -c backup.sql.gz | sed 's/^INSERT INTO/REPLACE INTO/' > ready.sql
+          # Fix: Disable foreign key checks, Unzip, substitute INSERT/CREATE, and pipe
+          gunzip -c backup.sql.gz | sed -e 's/CREATE TABLE/CREATE TABLE IF NOT EXISTS/' -e 's/^INSERT INTO/REPLACE INTO/' > ready.sql
           echo "SET FOREIGN_KEY_CHECKS=0; SOURCE ready.sql;" | mysql \
             -h "$T_HOST" \
             -P "$T_PORT" \
