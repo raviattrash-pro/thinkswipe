@@ -1,4 +1,4 @@
-name: Aiven to TiDB Cloud Sync
+name: High-Performance TiDB Sync & Backup
 
 on:
   schedule:
@@ -19,83 +19,78 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y mysql-client zip
 
-      - name: Dump SQL from Aiven
+      - name: Dump SQL from Primary TiDB
         env:
-          S_HOST: ${{ secrets.SOURCE_HOST }}
-          S_PORT: ${{ secrets.SOURCE_PORT }}
-          S_USER: ${{ secrets.SOURCE_USER }}
-          S_PASS: ${{ secrets.SOURCE_PASS }}
-          S_DB: ${{ secrets.SOURCE_DB }}
+          S_HOST: ${{ secrets.PRIMARY_DB_HOST }}
+          S_PORT: 4000
+          S_USER: ${{ secrets.PRIMARY_DB_USER }}
+          MYSQL_PWD: ${{ secrets.PRIMARY_DB_PASSWORD }}
+          S_DB: ${{ secrets.PRIMARY_DB_NAME }}
         run: |
+          # Note: --single-transaction removed to fix TiDB 'SAVEPOINT sp does not exist' error
           mysqldump \
             -h "$S_HOST" \
             -P "$S_PORT" \
             -u "$S_USER" \
-            -p"$S_PASS" \
-            --single-transaction \
             --quick \
             --column-statistics=0 \
             --set-gtid-purged=OFF \
             --no-tablespaces \
+            --skip-lock-tables \
+            --skip-add-locks \
+            --skip-add-drop-table \
             "$S_DB" > backup.sql
-
           test -s backup.sql
           gzip -f backup.sql
-          echo "SQL dump from Aiven complete."
+          echo "SQL dump from Primary complete."
 
-      - name: Export CSV files from Aiven
+      - name: Export CSV files from Primary TiDB
         env:
-          S_HOST: ${{ secrets.SOURCE_HOST }}
-          S_PORT: ${{ secrets.SOURCE_PORT }}
-          S_USER: ${{ secrets.SOURCE_USER }}
-          S_PASS: ${{ secrets.SOURCE_PASS }}
-          S_DB: ${{ secrets.SOURCE_DB }}
+          S_HOST: ${{ secrets.PRIMARY_DB_HOST }}
+          S_PORT: 4000
+          S_USER: ${{ secrets.PRIMARY_DB_USER }}
+          MYSQL_PWD: ${{ secrets.PRIMARY_DB_PASSWORD }}
+          S_DB: ${{ secrets.PRIMARY_DB_NAME }}
         run: |
           mkdir -p csv
-
-          mysql -h "$S_HOST" -P "$S_PORT" -u "$S_USER" -p"$S_PASS" -Nse \
+          mysql -h "$S_HOST" -P "$S_PORT" -u "$S_USER" -Nse \
             "SELECT table_name FROM information_schema.tables WHERE table_schema='$S_DB' ORDER BY table_name;" \
             > tables.txt
-
           while read -r table; do
             [ -n "$table" ] || continue
             echo "Exporting $table to CSV..."
-
-            mysql -h "$S_HOST" -P "$S_PORT" -u "$S_USER" -p"$S_PASS" \
+            mysql -h "$S_HOST" -P "$S_PORT" -u "$S_USER" \
               --batch --raw --silent \
               -e "SELECT * FROM \`$S_DB\`.\`$table\`" \
-              | awk 'BEGIN { OFS="," } { gsub(/"/, "\"\"", $0); print }' \
-              | sed 's/\t/,/g' > "csv/${table}.csv"
+              | awk 'BEGIN { FS="\t"; OFS="," } { for(i=1;i<=NF;i++) { gsub(/"/, "\"\"", $i); $i="\""$i"\"" } print }' \
+              > "csv/${table}.csv"
           done < tables.txt
-
           zip -r backup-csv.zip csv
           echo "CSV export complete."
 
       - name: Upload SQL backup artifact
         uses: actions/upload-artifact@v4
         with:
-          name: aiven-sql-backup-${{ github.run_id }}
+          name: primary-sql-backup-${{ github.run_id }}
           path: backup.sql.gz
           retention-days: 5
 
       - name: Upload CSV backup artifact
         uses: actions/upload-artifact@v4
         with:
-          name: aiven-csv-backup-${{ github.run_id }}
+          name: primary-csv-backup-${{ github.run_id }}
           path: backup-csv.zip
           retention-days: 5
 
-      - name: Sync SQL backup to TiDB Cloud
+      - name: Sync SQL backup to Secondary TiDB
         env:
-          T_HOST: ${{ secrets.TARGET_HOST }}
-          T_PORT: ${{ secrets.TARGET_PORT }}
-          T_USER: ${{ secrets.TARGET_USER }}
-          T_PASS: ${{ secrets.TARGET_PASS }}
-          T_DB: ${{ secrets.TARGET_DB }}
+          T_HOST: ${{ secrets.SECONDARY_DB_HOST }}
+          T_PORT: 4000
+          T_USER: ${{ secrets.SECONDARY_DB_USER }}
+          MYSQL_PWD: ${{ secrets.SECONDARY_DB_PASSWORD }}
+          S_DB: ${{ secrets.PRIMARY_DB_NAME }}
+        if: env.T_HOST != ''
         run: |
-<<<<<<< HEAD
-          gunzip -c backup.sql.gz | mysql \
-=======
           echo "Syncing data to Secondary TiDB using Low-Permission Protocol..."
           # Fix: Automate database creation to bypass restricted 'sys' database
           TARGET_DB="$S_DB"
@@ -104,17 +99,9 @@ jobs:
           # Fix: Disable foreign key checks, Unzip, substitute INSERT/CREATE, and pipe
           gunzip -c backup.sql.gz | sed -e 's/CREATE TABLE/CREATE TABLE IF NOT EXISTS/' -e 's/^INSERT INTO/REPLACE INTO/' > ready.sql
           echo "SET FOREIGN_KEY_CHECKS=0; SOURCE ready.sql;" | mysql \
->>>>>>> a56f8e5 (backup)
             -h "$T_HOST" \
             -P "$T_PORT" \
             -u "$T_USER" \
-            -p"$T_PASS" \
             --ssl-mode=REQUIRED \
-<<<<<<< HEAD
-            "$T_DB"
-
-          echo "Sync to TiDB Cloud complete!"
-=======
             "$TARGET_DB"
           echo "Sync to Secondary complete!"
->>>>>>> a56f8e5 (backup)
