@@ -93,12 +93,28 @@ jobs:
           T_PASS: ${{ secrets.TARGET_PASS }}
           T_DB: ${{ secrets.TARGET_DB }}
         run: |
+<<<<<<< HEAD
           gunzip -c backup.sql.gz | mysql \
+=======
+          echo "Syncing data to Secondary TiDB using Low-Permission Protocol..."
+          # Fix: Automate database creation to bypass restricted 'sys' database
+          TARGET_DB="$S_DB"
+          mysql -h "$T_HOST" -P "$T_PORT" -u "$T_USER" --ssl-mode=REQUIRED -e "CREATE DATABASE IF NOT EXISTS \`$TARGET_DB\`;"
+
+          # Fix: Disable foreign key checks, Unzip, substitute INSERT/CREATE, and pipe
+          gunzip -c backup.sql.gz | sed -e 's/CREATE TABLE/CREATE TABLE IF NOT EXISTS/' -e 's/^INSERT INTO/REPLACE INTO/' > ready.sql
+          echo "SET FOREIGN_KEY_CHECKS=0; SOURCE ready.sql;" | mysql \
+>>>>>>> a56f8e5 (backup)
             -h "$T_HOST" \
             -P "$T_PORT" \
             -u "$T_USER" \
             -p"$T_PASS" \
             --ssl-mode=REQUIRED \
+<<<<<<< HEAD
             "$T_DB"
 
           echo "Sync to TiDB Cloud complete!"
+=======
+            "$TARGET_DB"
+          echo "Sync to Secondary complete!"
+>>>>>>> a56f8e5 (backup)
