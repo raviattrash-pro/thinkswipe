@@ -24,15 +24,14 @@ jobs:
           S_HOST: ${{ secrets.PRIMARY_DB_HOST }}
           S_PORT: 4000
           S_USER: ${{ secrets.PRIMARY_DB_USER }}
-          S_PASS: ${{ secrets.PRIMARY_DB_PASSWORD }}
+          MYSQL_PWD: ${{ secrets.PRIMARY_DB_PASSWORD }} # Recommended for security
           S_DB: ${{ secrets.PRIMARY_DB_NAME }}
         run: |
+          # Note: --single-transaction removed to fix TiDB 'SAVEPOINT sp does not exist' error
           mysqldump \
             -h "$S_HOST" \
             -P "$S_PORT" \
             -u "$S_USER" \
-            -p"$S_PASS" \
-            --single-transaction \
             --quick \
             --column-statistics=0 \
             --set-gtid-purged=OFF \
@@ -49,21 +48,22 @@ jobs:
           S_HOST: ${{ secrets.PRIMARY_DB_HOST }}
           S_PORT: 4000
           S_USER: ${{ secrets.PRIMARY_DB_USER }}
-          S_PASS: ${{ secrets.PRIMARY_DB_PASSWORD }}
+          MYSQL_PWD: ${{ secrets.PRIMARY_DB_PASSWORD }}
           S_DB: ${{ secrets.PRIMARY_DB_NAME }}
         run: |
           mkdir -p csv
-          mysql -h "$S_HOST" -P "$S_PORT" -u "$S_USER" -p"$S_PASS" -Nse \
+          mysql -h "$S_HOST" -P "$S_PORT" -u "$S_USER" -Nse \
             "SELECT table_name FROM information_schema.tables WHERE table_schema='$S_DB' ORDER BY table_name;" \
             > tables.txt
           while read -r table; do
             [ -n "$table" ] || continue
             echo "Exporting $table to CSV..."
-            mysql -h "$S_HOST" -P "$S_PORT" -u "$S_USER" -p"$S_PASS" \
+            # Clean export using mysql command directly
+            mysql -h "$S_HOST" -P "$S_PORT" -u "$S_USER" \
               --batch --raw --silent \
               -e "SELECT * FROM \`$S_DB\`.\`$table\`" \
-              | awk 'BEGIN { OFS="," } { gsub(/"/, "\"\"", $0); print }' \
-              | sed 's/\t/,/g' > "csv/${table}.csv"
+              | awk 'BEGIN { FS="\t"; OFS="," } { for(i=1;i<=NF;i++) { gsub(/"/, "\"\"", $i); $i="\""$i"\"" } print }' \
+              > "csv/${table}.csv"
           done < tables.txt
           zip -r backup-csv.zip csv
           echo "CSV export complete."
@@ -87,17 +87,17 @@ jobs:
           T_HOST: ${{ secrets.SECONDARY_DB_HOST }}
           T_PORT: 4000
           T_USER: ${{ secrets.SECONDARY_DB_USER }}
-          T_PASS: ${{ secrets.SECONDARY_DB_PASSWORD }}
+          MYSQL_PWD: ${{ secrets.SECONDARY_DB_PASSWORD }}
           T_DB: ${{ secrets.SECONDARY_DB_NAME }}
         if: env.T_HOST != ''
         run: |
           echo "Syncing data to Secondary TiDB using Low-Permission Protocol..."
-          # Fix: Unzip, substitute INSERT with REPLACE (for forbidden CREATE/DROP), and pipe to mysql
-          gunzip -c backup.sql.gz | sed 's/^INSERT INTO/REPLACE INTO/' | mysql \
+          # Fix: Disable foreign key checks, Unzip, substitute INSERT with REPLACE, and pipe
+          gunzip -c backup.sql.gz | sed 's/^INSERT INTO/REPLACE INTO/' > ready.sql
+          echo "SET FOREIGN_KEY_CHECKS=0; SOURCE ready.sql;" | mysql \
             -h "$T_HOST" \
             -P "$T_PORT" \
             -u "$T_USER" \
-            -p"$T_PASS" \
             --ssl-mode=REQUIRED \
             "$T_DB"
           echo "Sync to Secondary complete!"
