@@ -37,11 +37,12 @@ jobs:
 
       - name: Backup Secondary Database (Optional)
         env:
+          SECONDARY_HOST: ${{ secrets.SECONDARY_DB_HOST }}
           DB_HOST: ${{ secrets.SECONDARY_DB_HOST }}
           DB_USER: ${{ secrets.SECONDARY_DB_USER }}
           DB_PASS: ${{ secrets.SECONDARY_DB_PASSWORD }}
           DB_NAME: ${{ secrets.SECONDARY_DB_NAME }}
-        if: "${{ secrets.SECONDARY_DB_HOST != '' }}"
+        if: env.SECONDARY_HOST != ''
         run: |
           mkdir -p secondary_backup/csv
           echo "Dumping Secondary SQL..."
