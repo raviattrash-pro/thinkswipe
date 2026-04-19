@@ -1,6 +1,8 @@
 # ThinkSwipe: The Future of Technical Interview Prep
 
-![ThinkSwipe Premium Hero](./docs/images/hero.png)
+<p align="center">
+  <img src="./docs/images/hero.png" width="800" alt="ThinkSwipe Premium Hero" />
+</p>
 
 ThinkSwipe is a high-performance, mobile-first technical interview simulator designed for the modern engineer. Built with a TikTok-style infinite feed, it provides instantaneous, high-signal interview practice across DSA, System Design, and HR behavioral categories.
 
@@ -41,7 +43,9 @@ graph TD
 ### Data Persistence & Reliability Logic
 ThinkSwipe implements a robust database synchronization strategy to ensure zero data loss and multi-region disaster recovery.
 
-![Infrastructure Reliability](./docs/images/infra.png)
+<p align="center">
+  <img src="./docs/images/infra.png" width="600" alt="Infrastructure Reliability" />
+</p>
 
 1. **Active/Passive DB Strategy**: 
    - Operations occur on the **Primary TiDB Cluster (AWS ap-southeast-1)**.
@@ -65,7 +69,9 @@ Get immediate feedback on your answers with a proprietary scoring algorithm.
 - **Feedback Loop**: Detailed feedback and a 1-10 score are provided for every attempt.
 - **Model Solutions**: Reveal industry-standard answers to compare against your approach.
 
-![AI Evaluation Feature](./docs/images/eval.png)
+<p align="center">
+  <img src="./docs/images/eval.png" width="500" alt="AI Evaluation Feature" />
+</p>
 
 ### 3. Progressive Web App (PWA)
 Install ThinkSwipe on any device for a native-like experience with offline capabilities and instant loading.
