@@ -38,6 +38,8 @@ jobs:
             --no-tablespaces \
             --skip-lock-tables \
             --skip-add-locks \
+            --no-create-info \
+            --skip-add-drop-table \
             "$S_DB" > backup.sql
           test -s backup.sql
           gzip -f backup.sql
