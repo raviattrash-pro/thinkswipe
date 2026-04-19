@@ -1,0 +1,40 @@
+Capgemini Java Interview – Flashcards & Quick
+Notes
+Core Java & OOPS
+OOPS: Encapsulation, Inheritance, Polymorphism, Abstraction.
+String is immutable for security, caching, and thread safety.
+== compares reference, equals() compares content.
+Java 8
+Key features: Lambda, Stream API, Functional Interfaces, Optional.
+Streams help process collections functionally.
+Spring Core
+Dependency Injection using @Autowired.
+Bean scopes: Singleton, Prototype, Request, Session.
+Spring Boot
+@SpringBootApplication = Configuration + AutoConfig + ComponentScan.
+Embedded server like Tomcat.
+Exception handling using @ControllerAdvice.
+REST APIs
+@RestController creates RESTful services.
+@PathVariable vs @RequestParam.
+HTTP Status Codes: 200, 201, 400, 401, 404, 500.
+Hibernate / JPA
+ORM framework mapping objects to tables.
+Lazy vs Eager loading.
+First-level cache is session scoped.
+Microservices
+Independent deployable services.
+Communication via REST.
+Circuit Breaker prevents cascading failures.
+Servers
+Tomcat: Servlet container.
+WebLogic: Full Java EE application server.
+
+-- 1 of 2 --
+
+Coding Topics
+String reverse, duplicate removal, arrays, streams.
+Basic problem-solving using Java 8.
+
+-- 2 of 2 --
+

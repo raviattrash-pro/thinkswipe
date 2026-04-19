@@ -1,0 +1,475 @@
+JAVA BE INTERVIEW – TOPIC WISE MASTER
+Developed by dhruvtechbytes
+@Instagram - https://www.instagram.com/dhruvtechbytes
+Java/Jre/JVM
+1. What is Java Virtual Machine (JVM)? Difference between JVM/JDK /JRE?
+2. Explain the JVM architecture and its main components (Class Loader, Runtime
+Data Areas, Execution Engine). What are the different runtime data areas in JVM
+(Heap, Stack, Metaspace, Code Cache)?
+3. What are the thread-specific runtime data areas in JVM? Explain their roles.
+Or
+What is the impact of thread creation on memory allocation in these areas?
+4. Explain the Java Memory Model (JMM) and its guarantees.
+5. What are happens-before relationships in JMM?
+6. How does the JVM implement volatile variables and atomic operations?
+7. Your production service shows occasional spikes in response time. GC logs
+indicate frequent Full GCs. How would you analyse and check the causes and
+provide resolution?
+Or
+How do you analyze and tune JVM performance using JFR, JIT logs, and GC logs?
+8. Various JVM or java args that can help fine tune the java and JVM performance?
+9. What is MetaSpace? How does it differ from PermGen?
+10.
+Java 8:
+1. What are Functional interfaces? Why they were added in Java 8?Is FI annotation
+mandatory?
+2. Various types or categories of FI?Any predefined Fis(ex. Runnable)? What is the
+difference between Predicate, Function, and Supplier interfaces?
+3. Write a FI for basic tasks like summing 2 numbers or any FizzBuzz and use it.
+4. What is the default method, and why is it required?
+5. Can a functional interface extend/inherit another interface? A functional
+interface cannot extend another interface with abstract methods as it will void
+the rule of one abstract method per functional interface. It can extend other
+interfaces which do not have any abstract method and only have the default,
+static, another class is overridden, and normal methods.
+6. Method references? Syntax? Scenario based question to check if he knows the
+syntax well as well as existing method references added in library: You have a list
+
+-- 1 of 12 --
+
+of strings and want to sort them ignoring case. How can you use method
+references instead of lambdas?
+7. What is the difference between lambdas and anonymous inner classes in terms
+of scope and performance?
+8. Asynchronous Programming? CompletableFuture?
+9. Diff between terminal and intermediate operations in Java 8? Test ability to
+identify in real programs
+10. Parallel streams? When to use? What are the pitfalls of using parallelStream() in
+a web application?
+11. What is a Spliterator in Java 8?Diff between Iterator vs Splititerator?
+12. Is multiple inheritance possible in java 8? If not why? What about Multi level
+inheritance?Diamond prob?
+Collections
+1. Internan working of Arraylist{should know when n how new array is created and
+data copied}? HashMap{should know hashing and then index generation, data
+stored in buckets in array and hash Collisions lead to linked list[singly]
+creation,RB tree when? need of Hashcode, equals, Immutable classes}? What
+happens when you put a key object in a HashMap that is already present?
+2. Why Concurrenthashmap when already HashTable present? Segmentation?
+Locking? Concurrent modification?
+3. What are the differences between the two data structures: a Vector
+and an ArrayList?
+4. In which scenario, LinkedList is better than ArrayList in Java?
+5. What are the differences between a HashMap and a Hashtable in
+Java?
+6. Internal working of treemap? Diff between Treemap and hashMap?
+7. Immutable class? Why are these needed? How to make them secure from
+I/o and reflection?examples
+8. Shallow and Deep cloning? When to use which? Which one is needed while
+creating Immutable class?
+9. Comparator vs Comparable? Which one provides natural sorting?
+Implement same for employee[id, name. salary,age] to sort in descending
+order of salary?
+10. Collections class? When to use synchronized collections? Arrays class?
+11. What is CopyOnWriteArrayList? How it is different from ArrayList in Java?
+12. WeakHashMap? WeakReference? SoftReference?
+13. Let say there is a Customer class. We add objects of Customer class
+14. to an ArrayList. How can we sort the Customer objects in ArrayList by
+15. using customer firstName attribute of Customer class?
+
+-- 2 of 12 --
+
+16. What is the difference between Synchronized Collection and Concurrent
+Collection?
+17. What is the scenario to use ConcurrentHashMap in Java?
+18. How will you create an empty Map in Java?
+19. What is the difference between remove() method of Collection and
+remove() method of Iterator?
+20. Between an Array and ArrayList, which one is the preferred
+collection for storing objects?
+21. Is it possible to replace Hashtable with ConcurrentHashMap in Java?
+22. How CopyOnWriteArrayList class is different from ArrayList and
+Vector classes?
+23. Why ListIterator has add() method but Iterator does not have?
+24. Why do we sometime get ConcurrentModificationException during
+iteration?
+25. How will you convert a Map to a List in Java?
+26. How can we create a Map with reverse view and lookup in Java?
+27. How will you create a shallow copy of a Map?
+28. Why we cannot create a generic array in Java?
+29. What is a PriorityQueue in Java?
+Exception handling
+1. What is the base class for Error and Exception classes in Java?
+2. What is a finally block in Java? Output of following
+public class FinallyTest {
+public static int testMethod() {
+try {
+System.out.println("In try block");
+return 10;
+} catch (Exception e) {
+System.out.println("In catch block");
+return 20;
+} finally {
+System.out.println("In finally block");
+return 30;
+}
+}
+
+-- 3 of 12 --
+
+public static void main(String[] args) {
+System.out.println("Result: " + testMethod());
+}
+}
+3. In Java, what are the differences between a Checked and
+Unchecked? Examples? How would you handle these?
+4. Can we create a finally block without creating a catch block? In what
+scenarios, a finally block will not be executed?
+5. What is the concept of Exception Propagation?Example by code?
+6. When we override a method in a Child class, can we throw an
+additional Exception that is not thrown by the Parent class method?
+7. Try with resource? Any changes done in it recently? When to use?
+String
+1. What is the meaning of Immutable in the context of String class in
+Java?
+2.Why a String object is considered immutable in java?
+3.How many objects does following code create?
+4.How many ways are there in Java to create a String object?
+5.How many objects does following code create?
+6.What is String interning?
+7.Why Java uses String literal concept?
+8.What is the basic difference between a String and StringBuffer
+object?
+9.How will you create an immutable class in Java?
+10.What is the use of toString() method in java ?
+11. Arrange the three classes String, StringBuffer and StringBuilder in
+the order of efficiency for String processing operations?
+30. Diff between or how many objects are created when
+String s=new String(“Shiv”);
+Struing s1=”Shiv”;
+String s2=”Shiv”;
+31. Concept of interning? Output of below program
+String s1 = "Java";
+String s2 = "Java";
+String s3 = new String("Java");
+String s4 = s3.intern();
+System.out.println(s1 == s2);
+
+-- 4 of 12 --
+
+System.out.println(s1 == s3);
+System.out.println(s1 == s4);
+32. Output of below:
+String s = "Hello";
+s.concat("World");
+System.out.println(s);
+33. How many objects
+String s1 = "abc";
+String s2 = new String("abc");
+String s3 = s2.toUpperCase();
+2
+Multithreading
+1. Thread vs Runnable? Creating threads in diff ways?Runnable as lambda?
+2. Different ways of synchronization of threads in Java?
+3. What does the synchronized keyword do in Java? How does it work
+internally?
+4. What is the difference between synchronizing on a method vs synchronizing
+on a block?
+5. What is the difference between synchronized instance methods and
+synchronized static methods?
+6. What object is used as the lock when you declare a method as
+synchronized?
+7. Can constructors be synchronized? Why or why not?
+8. What happens if two threads call two different synchronized methods on the
+same object?
+9. What is the difference between synchronized(this) and
+synchronized(SomeClass.class)?
+10. What is the impact of synchronized on performance compared to
+ReentrantLock?
+11. How does JVM implement synchronization under the hood (monitor
+enter/exit, biased locking)?
+12. What happens if a thread holding a lock calls wait()? Does it release the
+lock?
+13. Race Condition vs Visibility problem? How volatile solves visibility?
+14. JMM in detail? Happens before?
+15. What is a daemon thread in Java?How will you make a user thread into
+daemon thread if it has already started?
+16. Wait(), notify(), notifyAll()? Present in which class and why?
+17. Runnable vs Callable?
+
+-- 5 of 12 --
+
+18. ExecutorService? Type of thread pool? What considerations while creating
+thread pool?
+19. What is the fundamental difference between wait() and sleep()
+methods?
+20. Locks? What is the difference between synchronized and Lock interface in
+Java? Wh-
+21. Explain the difference between ReentrantLock and intrinsic locks
+(synchronized).
+(Explicit lock/unlock, fairness policy, condition variables.)
+22. What is a reentrant lock? Why is it called reentrant? Main purpose of using
+them? Fairness?diff with ReentrantReadWritelock?
+23. What is the use of ThreadLocal class?
+24. There are two threads T1 and T2? How will you ensure that these threads run
+in sequence T1, T2 in Java?
+25. What is difference between CyclicBarrier and CountDownLatch class?
+Miscellaneous:
+1. Serializable ? Significance of serialVersionUID? Externalizable?
+2. Marker interfaces? Why required?
+3. Is there any difference between a = a + b and a += b expressions?
+4. Let say there is a method that throws NullPointerException in the
+superclass. Can we override it with a method that throws
+RuntimeException?
+5. Can we make an array volatile? Any caveats? How can you mark an array
+volatile in Java properly?
+6. Which class contains clone method? Cloneable or Object class? Is
+Cloneable broken interface?
+7. What will this return 5*0.1 == 0.5? true or false?
+Spring/Spring boot:
+1. IOC? Purpose and benefits of IOC container in Spring?DI? types?
+2. Singleton in Spring vs Singleton implementation in java? Is it safe to assume
+that a Singleton bean is thread safe in Spring Framework?
+3. Lifecycle of a bean?
+4. Autowiring? Different methods of autowiring? What if we implement same
+interface in two classes and we have to inject one of the class using
+autowiring? @Primary, @Qualifier, Convention over configuration in
+qualifying by object name?
+5. @Configuration? @Bean?
+6. @Autowired vs @Inject
+
+-- 6 of 12 --
+
+7. Diff between ResponseBody and ResponseEntity?
+8. Diff between Controller and RestController? Why @ResponseBody not
+needed in @RestController
+9. Significance of @SpringBootApplication annotation? What annotations does
+it comprise of and function of each of them?
+10. How does @ComponentScan work if no package name given with
+annotation?
+11. How does @EnableAutoConfiguration in Spring Boot enable plug-and-play
+functionality?
+Spring Controller and Web layer:
+1. How do you handle JSON and XML responses in Spring Boot REST APIs?
+2. What is the difference between @RequestParam, @PathVariable, and
+@RequestBody? Give implementation for each and share how you will
+generate endpoint and pass values
+3. Best practices while creating endpoints, url naming scheme?
+4. Various REST methods like GET,PUT,POST.PATCH.OPTIONS, DELETE?
+Which are idempotent?
+5. How do you implement file upload and download in Spring REST?
+6. How do you configure CORS in Spring Boot REST APIs?
+7. How does Spring Boot auto-configure Jackson for JSON
+serialization/deserialization?
+8. Explain the lifecycle of a REST request in Spring Boot (DispatcherServlet -
+> HandlerMapping -> Controller -> ViewResolver).
+9. Richardson maturity Model and hateos? How do you implement
+HATEOAS in Spring Boot REST?
+10. How do you secure REST APIs using Spring Security + JWT? JWT
+structure? JWT lifecycle?
+11. Rate limiting, Throttling in Spring boot application? What steps are
+required?
+12. How to handle caching with Spring boot? @EnableCaching ? How does
+@Cacheable work in Spring Boot? What is the difference between
+@Cacheable, @CachePut, and @CacheEvict?Cache expiration handling?
+13. How do you implement conditional caching using unless and condition
+attributes in @Cacheable?
+14. Caching in clustered env? How do you prevent cache stampede or cache
+avalanche in Spring Boot?
+15. How do you implement ETags and conditional GET with caching for REST
+APIs?
+
+-- 7 of 12 --
+
+16. How does @Cacheable works internally? CacheInterceptor.Cache
+Manager.. Cache resolver? Cache lookup…decision baed on presence…
+17. How do you implement multi-level caching (in-memory + Redis)?When
+you will use it?Disads?
+18. Dispatcher servlet? Role?Explain the lifecycle of DispatcherServlet from
+initialization to request handling. How does DispatcherServlet handle
+asynchronous requests (DeferredResult, Callable)?
+19. How does DispatcherServlet interact with HandlerInterceptor and what
+is the exact order of execution?
+20. How do you validate request data in a Spring Boot controller? @Valid and
+@Validated?Diff bw two?
+21. How do you implement custom validation annotations in Spring?
+22. How do you validate nested objects in a request payload? How do you
+validate collections (e.g., list of objects) in a request body?
+23. How do you handle validation for path variables and query parameters?
+24. How do you implement cross-field validation (e.g., password and confirm
+password)?
+25. How do you customize the MethodValidationPostProcessor for advanced
+use cases?
+26. How do you validate file uploads or multipart requests in Spring?
+Exception handling:
+1. How do you handle exceptions in Spring Boot using @ExceptionHandler?
+2. What is the difference between @ControllerAdvice and
+@RestControllerAdvice?
+3. Create and Handle custom exceptions
+4. How do you handle validation exceptions
+(MethodArgumentNotValidException)?
+5. How do you propagate exceptions from service layer to controller layer?
+6. How do you use ResponseEntityExceptionHandler for centralized
+exception handling?
+JPA/JDBC
+1. What is diff between JPA, Hibernate/Ibtis, Spring Data JPA?
+2. Use of transient keyword?
+3. Create an Entity for Employee[int id, String name, int age, double salary]
+with all annotations
+4. What is the purpose of @GeneratedValue in JPA? What are the different
+strategies supported by @GeneratedValue? Explain the difference between
+GenerationType.AUTO, IDENTITY, SEQUENCE, and TABLE.
+
+-- 8 of 12 --
+
+5. How does GenerationType.AUTO decide which strategy to use?
+6. When would you use GenerationType.SEQUENCE over IDENTITY?perf
+implications?
+7. What is the role of @SequenceGenerator and @TableGenerator?
+@GeneratedValue(strategy = GenerationType.TABLE, generator =
+"prod_gen")
+@TableGenerator(name = "prod_gen", table = "id_generator",
+pkColumnName = "gen_name",
+valueColumnName = "gen_value", allocationSize = 5)
+@GeneratedValue(strategy = GenerationType.SEQUENCE, generator =
+"emp_seq")
+@SequenceGenerator(name = "emp_seq", sequenceName =
+"employee_sequence", allocationSize = 10)
+8. How do you implement a custom ID generator in JPA?
+9. How does JpaRepository differ from CrudRepository?
+10. How do you use @Query annotation for custom JPQL queries?
+11. How do you enable pagination and sorting in Spring Data JPA?
+12. What is the role of EntityManager in Spring Data JPA?
+13. When to use @OneToOne, @OneToMany, @ManyToOne, @ManytoMany?
+14. Explain the difference between fetch = FetchType.LAZY and
+FetchType.EAGER.
+15. N+1 query problem? caused by FetchType.EAGER or lazy loading?
+16. How do you use @Query annotation for custom JPQL queries? Let’s say we
+want to modify data in Table using @Query what other annotations required?
+17. Use of @modifying and @Transactional?
+18. How do you implement auditing in Spring Data JPA (@CreatedDate,
+@LastModifiedDate)?
+19. How do you handle optimistic and pessimistic locking in Spring Data JPA?
+20. @version? @Lock? @Transactional?various lock modes?
+21. How do you integrate Spring Data JPA with multiple data sources?
+22. How do you implement multi-tenancy with Spring Data JPA?application
+connects or holds data for multiple orgs or clients….How to handle this in
+Spring Boot app? DB per tenant, Schema per tenant, shared schema
+discriminator based
+23. How does Spring Data JPA work with native queries and projections?
+24. How do you debug and optimize slow queries in Spring Data JPA?
+25. How do you handle bidirectional relationships and avoid infinite recursion in
+JSON serialization?
+26. How do you implement cascade operations in JPA?
+
+-- 9 of 12 --
+
+27. How do you use Entity Graphs for optimizing queries?
+28. How do you implement batch inserts/updates efficiently?
+29. How do you define a Named Query using @NamedQuery annotation? What
+is the difference between @NamedQuery and @NamedNativeQuery?
+30. How does Spring Data JPA resolve Named Queries internally?
+31. What is the precedence between Named Queries and @Query annotation in
+Spring Data JPA? How do you override a Named Query defined in an entity?
+32. How do you define an index in JPA using annotations?
+33. What is the difference between @Index and unique=true on @Column?
+34. Advantage and disadvantages of indexing? What is the impact of indexing on
+insert/update performance?
+35. Indexes in joins? Does JPA automatically create indexes for foreign keys?
+DB
+1. DDl,DML? Diff between Delete and truncate? WHERE vs HAVING?
+2. Explain INNER JOIN vs LEFT JOIN with examples.
+3. ACID properties?
+4. Indexing? When to do? Advantage /Disadvantages
+5. How do you implement pagination in SQL?
+6. Views over tables? Why use views?View vs Materialized Views? Ad/Disad?
+7. Arrange in orderof execution
+WHERE,GROUP BY,SELECT ,HAVING,FROM,JOIN ,ORDER BY ,LIMIT / OFFSET
+Correct: FROM, JOIN, WHERE, GROUP BY, HAVING, SELECT, ORDER BY, LIMIT
+/ OFFSET
+8. Self join? Why it is required? ]
+9. Find name of Employee having second or n max salary. Emplouyee[id,
+name,salary,dept]
+10. find employees who earn more than the average salary of their department,
+and rank them within their department by salary.
+11. Find the top 3 highest-paid employees in each department.
+12. Given Employee( id INT, name VARCHAR(50), department_id INT, manager_id
+INT, salary DECIMAL, hire_date DATE )
+13. Find employees who earn more than the average salary of their department.
+14. Find employees who joined before the earliest hire date in their department.
+15. Find employees who earn more than the average salary of their department
+AND more than their manager.
+16. Find employees who have the same salary as someone in another
+department.
+
+-- 10 of 12 --
+
+17. Partitioning?Different types of partitioning? (Range, List, Hash)
+18. What is the difference between horizontal partitioning and vertical
+partitioning?
+19. How do you manage indexes on partitioned tables?
+20. What is sub-partitioning and when would you use it?
+21. How do you implement partitioning with composite keys?
+22. Composite keys?Primary keys? Candidate Keys? Surrogate Keys? Is it
+possible to have a table without a primary key in a relational database? If
+yes, what are the implications for data integrity and query performance?
+How would you uniquely identify rows in such a table?
+Microservices
+1. Microservices in your own words? How is it diff from Monolith?benefits of
+using MS and Downsides?
+2. How do microservices communicate with each other? Synchronous and
+Asynchronous modes? REST/HTTPS, SOAP, gRPC, Message queues like
+RabbitMQ,KafKa etc.
+3. Explain Event Driven Architecture? How,Why and when used?
+4. Explain the difference between an event, a command, and a query in
+EDA.
+5. What is the role of an Event Bus or Message Broker in EDA?
+6. Explain the concept of Event Sourcing and how it differs from traditional
+CRUD.
+7. What are the challenges of implementing distributed transactions in EDA
+and how do you solve them? Using Saga pattern how can we solve these
+problems?
+8. Saga pattern?Different types? When how and why use? What happens if
+one step in a Saga fails?How does it ensure eventual consistency?
+9. How do you implement compensating transactions in a Saga? How do
+you handle retries and idempotency in Saga steps?
+10. What are the challenges of implementing Saga in a system with high
+throughput?How about when need to design a Saga for a globally
+distributed system with strict latency requirements?
+11. CQRS?Differentiate Command and Query ? benefits? Disads? How do
+you keep the read model in sync with the write model?
+12. Explain how eventual consistency works in CQRS.
+13. How to implement feign client in an application? What are various steps?
+Where do you manage URls?How do you handle fallbacks?
+14. difference between fault tolerance and resilience.
+15. How to ensure resilience in MS?What are various resilience patterns?
+
+-- 11 of 12 --
+
+Circuit Breaker? Bulkhead?
+16. Load balancing? client-side and server-side load balancing in
+microservices? Explain any load balancing scheme used in any of your
+project?
+17. How does Kubernetes Service load balancing differ from an API Gateway
+load balancer?
+18. What is the difference between Layer 4 and Layer 7 load balancing?
+Which one is better for microservices?
+19. Steps to implement a Circuit breaker library [Resilience4j or Hysterix]?
+various states handling?
+20. How can retry,retry with exponential backoffs, timeouts and rate limiting
+help? How to implement them
+21. Scalability? Horizontal vs Vertical? Are MS more scalable than
+monolith?why?
+22. How do you implement auto-scaling in a Kubernetes-based
+microservices architecture?HPA, VPA,CA etc
+23. 12 factor apps standards? CAP theorem?
+24. What is service discovery and why do we need it?Steps to implement the
+same in Spring boot?
+25. What is distributed tracing and why is it important in
+microservices?concept of traceID n span Id?How do you pass or
+propagate trace context though all the microservices?Implementing it in
+spring boot? Libraries to be used?
+© dhruvtechbytes | Java • Spring Boot • Microservices • Database
+
+-- 12 of 12 --
+

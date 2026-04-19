@@ -1,0 +1,37 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: interview-db
+    environment:
+      MYSQL_DATABASE: interview_simulator
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  backend:
+    build: ./Interview_App/backend
+    container_name: interview-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_URL=jdbc:mysql://db:3306/interview_simulator?useSSL=false
+      - DB_USERNAME=root
+      - DB_PASSWORD=rootpassword
+      - ALLOWED_ORIGINS=http://localhost:5173
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build: ./Interview_App/frontend
+    container_name: interview-frontend
+    ports:
+      - "5173:80"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8080
+    depends_on:
+      - backend

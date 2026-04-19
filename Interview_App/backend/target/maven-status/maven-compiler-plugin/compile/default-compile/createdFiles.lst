@@ -1,0 +1,15 @@
+com\interviewsim\app\model\Attempt.class
+com\interviewsim\app\dto\QuestionResponse.class
+com\interviewsim\app\config\WebConfig.class
+com\interviewsim\app\service\QuestionService.class
+com\interviewsim\app\dto\AnswerRequest.class
+com\interviewsim\app\dto\AnswerResponse.class
+com\interviewsim\app\repository\QuestionRepository.class
+com\interviewsim\app\controller\AnswerController.class
+com\interviewsim\app\model\Question.class
+com\interviewsim\app\controller\QuestionController.class
+com\interviewsim\app\config\DataLoader.class
+com\interviewsim\app\InterviewSimulatorApplication.class
+com\interviewsim\app\config\InterviewQuestionCatalog.class
+com\interviewsim\app\repository\AttemptRepository.class
+com\interviewsim\app\service\AnswerService.class
