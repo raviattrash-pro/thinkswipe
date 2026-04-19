@@ -30,7 +30,7 @@ jobs:
         if: env.S_HOST != ''
         run: |
           echo "Syncing data from Primary to Secondary..."
-          mysqldump -h $P_HOST -u $P_USER -p$P_PASS $P_NAME --single-transaction --skip-lock-tables | mysql -h $S_HOST -u $S_USER -p$S_PASS $S_NAME
+          mysqldump -h $P_HOST -u $P_USER -p$P_PASS $P_NAME --single-transaction --skip-lock-tables --skip-add-drop-table --skip-add-locks --set-gtid-purged=OFF | mysql -h $S_HOST -u $S_USER -p$S_PASS $S_NAME
           echo "Synchronization complete!"
 
       - name: Backup Primary Database
@@ -42,7 +42,7 @@ jobs:
         run: |
           mkdir -p primary_backup/csv
           echo "Dumping Primary SQL..."
-          mysqldump -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME > primary_backup/backup.sql
+          mysqldump -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME --single-transaction --skip-lock-tables --skip-add-drop-table --skip-add-locks --set-gtid-purged=OFF > primary_backup/backup.sql
           
           echo "Dumping Primary CSVs..."
           TABLES=$(mysql -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME -e "SHOW TABLES" --batch --skip-column-names)
@@ -62,7 +62,7 @@ jobs:
         run: |
           mkdir -p secondary_backup/csv
           echo "Dumping Secondary SQL..."
-          mysqldump -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME > secondary_backup/backup.sql
+          mysqldump -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME --single-transaction --skip-lock-tables --skip-add-drop-table --skip-add-locks --set-gtid-purged=OFF > secondary_backup/backup.sql
           
           echo "Dumping Secondary CSVs..."
           TABLES=$(mysql -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME -e "SHOW TABLES" --batch --skip-column-names)
