@@ -1,0 +1,64 @@
+name: Daily Database Backup (SQL & CSV)
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Every day at midnight
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install MySQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mysql-client
+
+      - name: Backup Primary Database
+        env:
+          DB_HOST: ${{ secrets.PRIMARY_DB_HOST }}
+          DB_USER: ${{ secrets.PRIMARY_DB_USER }}
+          DB_PASS: ${{ secrets.PRIMARY_DB_PASSWORD }}
+          DB_NAME: ${{ secrets.PRIMARY_DB_NAME }}
+        run: |
+          mkdir -p primary_backup/csv
+          echo "Dumping Primary SQL..."
+          mysqldump -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME > primary_backup/backup.sql
+          
+          echo "Dumping Primary CSVs..."
+          TABLES=$(mysql -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME -e "SHOW TABLES" --batch --skip-column-names)
+          for table in $TABLES; do
+            echo "Exporting $table..."
+            mysql -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME -e "SELECT * FROM $table" --batch --silent > primary_backup/csv/$table.csv
+          done
+
+      - name: Backup Secondary Database (Optional)
+        env:
+          DB_HOST: ${{ secrets.SECONDARY_DB_HOST }}
+          DB_USER: ${{ secrets.SECONDARY_DB_USER }}
+          DB_PASS: ${{ secrets.SECONDARY_DB_PASSWORD }}
+          DB_NAME: ${{ secrets.SECONDARY_DB_NAME }}
+        if: "${{ secrets.SECONDARY_DB_HOST != '' }}"
+        run: |
+          mkdir -p secondary_backup/csv
+          echo "Dumping Secondary SQL..."
+          mysqldump -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME > secondary_backup/backup.sql
+          
+          echo "Dumping Secondary CSVs..."
+          TABLES=$(mysql -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME -e "SHOW TABLES" --batch --skip-column-names)
+          for table in $TABLES; do
+            echo "Exporting $table..."
+            mysql -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME -e "SELECT * FROM $table" --batch --silent > secondary_backup/csv/$table.csv
+          done
+
+      - name: Upload Backup Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: database-backups-${{ github.sha }}
+          path: |
+            primary_backup/
+            secondary_backup/
+          retention-days: 90

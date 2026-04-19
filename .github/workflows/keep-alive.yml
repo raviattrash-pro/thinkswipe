@@ -1,0 +1,19 @@
+name: Keep Render Services Alive
+
+on:
+  schedule:
+    - cron: '*/14 * * * *' # Every 14 minutes
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Render Services
+        run: |
+          echo "Pinging Render services to keep them awake..."
+          curl -s -L https://thinkswipe-9ahs.onrender.com/questions/feed > /dev/null
+          curl -s -L https://thinkswipe-9mg2.onrender.com/questions/feed > /dev/null
+          curl -s -L https://thinkswipe-i5tn.onrender.com/questions/feed > /dev/null
+          curl -s -L https://thinkswipe.onrender.com/questions/feed > /dev/null
+          echo "Done! All services pinged successfully."
