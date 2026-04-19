@@ -1,6 +1,6 @@
 # ThinkSwipe: The Future of Technical Interview Prep
 
-![ThinkSwipe Premium Hero](file:///C:/Users/ASUS/.gemini/antigravity/brain/abd08c7c-38e3-48e4-a834-7d03410e08b9/thinkswipe_hero_premium_1776600549200.png)
+![ThinkSwipe Premium Hero](./docs/images/hero.png)
 
 ThinkSwipe is a high-performance, mobile-first technical interview simulator designed for the modern engineer. Built with a TikTok-style infinite feed, it provides instantaneous, high-signal interview practice across DSA, System Design, and HR behavioral categories.
 
@@ -41,7 +41,7 @@ graph TD
 ### Data Persistence & Reliability Logic
 ThinkSwipe implements a robust database synchronization strategy to ensure zero data loss and multi-region disaster recovery.
 
-![Infrastructure Reliability](file:///C:/Users/ASUS/.gemini/antigravity/brain/abd08c7c-38e3-48e4-a834-7d03410e08b9/thinkswipe_reliability_infra_1776600617215.png)
+![Infrastructure Reliability](./docs/images/infra.png)
 
 1. **Active/Passive DB Strategy**: 
    - Operations occur on the **Primary TiDB Cluster (AWS ap-southeast-1)**.
@@ -65,7 +65,7 @@ Get immediate feedback on your answers with a proprietary scoring algorithm.
 - **Feedback Loop**: Detailed feedback and a 1-10 score are provided for every attempt.
 - **Model Solutions**: Reveal industry-standard answers to compare against your approach.
 
-![AI Evaluation Feature](file:///C:/Users/ASUS/.gemini/antigravity/brain/abd08c7c-38e3-48e4-a834-7d03410e08b9/thinkswipe_evaluation_feature_1776600581731.png)
+![AI Evaluation Feature](./docs/images/eval.png)
 
 ### 3. Progressive Web App (PWA)
 Install ThinkSwipe on any device for a native-like experience with offline capabilities and instant loading.
