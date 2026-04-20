@@ -134,6 +134,7 @@ function App() {
   const [isPaused, setIsPaused] = useState(false);
   const [countdown, setCountdown] = useState(10);
   const [slideDir, setSlideDir] = useState(null);
+  const touchStartY = useRef(null);
 
   const textareaRef = useRef(null);
 
@@ -315,10 +316,33 @@ function App() {
     localStorage.setItem("interview_liked_ids", JSON.stringify([...newLikedIds]));
   };
 
+  // TOUCH GESTURE HANDLING
+  const handleTouchStart = (e) => {
+    // Ignore if swiping inside interactive elements
+    if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT' || e.target.closest('.mcq-container')) return;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartY.current === null) return;
+    const touchEndY = e.changedTouches[0].clientY;
+    const deltaY = touchStartY.current - touchEndY;
+    
+    // threshold of 70px for swipe up
+    if (deltaY > 70) {
+      handleSkip();
+    }
+    touchStartY.current = null;
+  };
+
   if (showAdmin) return <AdminPanel onExit={() => setShowAdmin(false)} />;
 
   return (
-    <div className={`tiktok-container ${isBoss ? "boss-mode" : ""}`}>
+    <div 
+      className={`tiktok-container ${isBoss ? "boss-mode" : ""}`}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       {isLoading && <ShimmerCard />}
       
       {!isLoading && (
