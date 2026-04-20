@@ -4,10 +4,7 @@ import com.interviewsim.app.dto.AnswerRequest;
 import com.interviewsim.app.dto.AnswerResponse;
 import com.interviewsim.app.service.AnswerService;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/answer")
@@ -20,7 +17,9 @@ public class AnswerController {
     }
 
     @PostMapping
-    public AnswerResponse submitAnswer(@Valid @RequestBody AnswerRequest request) {
-        return answerService.evaluateAnswer(request);
+    public AnswerResponse submitAnswer(
+            @Valid @RequestBody AnswerRequest request,
+            @RequestHeader(value = "X-Visitor-Id", required = false) String visitorId) {
+        return answerService.evaluateAnswer(request, visitorId);
     }
 }

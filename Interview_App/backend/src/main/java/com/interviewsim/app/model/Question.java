@@ -39,6 +39,18 @@ public class Question {
     @Column(columnDefinition = "TEXT")
     private String explanation;
 
+    @Column(length = 200)
+    private String company; // Comma-separated: "Google,Amazon"
+
+    @Column(nullable = false)
+    private Integer skipCount = 0;
+
+    @Column(nullable = false)
+    private Integer attemptCount = 0;
+
+    @Column(nullable = false)
+    private Long totalScore = 0L;
+
     public Question() {
     }
 
@@ -47,6 +59,25 @@ public class Question {
         this.category = category;
         this.difficulty = difficulty;
         this.referenceAnswer = referenceAnswer;
+    }
+
+    public Question(String title, String category, String difficulty, String referenceAnswer, String company) {
+        this.title = title;
+        this.category = category;
+        this.difficulty = difficulty;
+        this.referenceAnswer = referenceAnswer;
+        this.company = company;
+        this.type = "TEXT";
+    }
+
+    public Question(String title, String category, String difficulty, String referenceAnswer, String type, String options, String company) {
+        this.title = title;
+        this.category = category;
+        this.difficulty = difficulty;
+        this.referenceAnswer = referenceAnswer;
+        this.type = type;
+        this.options = options;
+        this.company = company;
     }
 
     public Question(String title, String category, String difficulty, String referenceAnswer, String type, String options) {
@@ -128,5 +159,21 @@ public class Question {
 
     public void setExplanation(String explanation) {
         this.explanation = explanation;
+    }
+
+    public String getCompany() { return company; }
+    public void setCompany(String company) { this.company = company; }
+
+    public Integer getSkipCount() { return skipCount; }
+    public void setSkipCount(Integer skipCount) { this.skipCount = skipCount; }
+
+    public Integer getAttemptCount() { return attemptCount; }
+    public void setAttemptCount(Integer attemptCount) { this.attemptCount = attemptCount; }
+
+    public Long getTotalScore() { return totalScore; }
+    public void setTotalScore(Long totalScore) { this.totalScore = totalScore; }
+
+    public double getAverageScore() {
+        return attemptCount == 0 ? 0.0 : Math.round((double) totalScore / attemptCount * 10.0) / 10.0;
     }
 }

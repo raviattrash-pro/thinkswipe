@@ -7,6 +7,7 @@ public record QuestionResponse(
     String difficulty,
     String type,
     String options,
-    String explanation
+    String explanation,
+    String company
 ) {
 }

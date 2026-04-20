@@ -30,8 +30,14 @@ public class Attempt {
     @Column(length = 50)
     private String category;
 
-    @Column(length = 20)
+    @Column(length = 50)
     private String difficulty;
+
+    @Column(length = 100)
+    private String visitorId;
+
+    @Column(nullable = false)
+    private Boolean skipped = false;
 
     public Attempt() {
     }
@@ -43,6 +49,16 @@ public class Attempt {
         this.feedback = feedback;
         this.category = category;
         this.difficulty = difficulty;
+    }
+
+    public Attempt(Long questionId, String userAnswer, Integer score, String feedback, String category, String difficulty, String visitorId) {
+        this.questionId = questionId;
+        this.userAnswer = userAnswer;
+        this.score = score;
+        this.feedback = feedback;
+        this.category = category;
+        this.difficulty = difficulty;
+        this.visitorId = visitorId;
     }
 
     public Long getId() {
@@ -100,4 +116,15 @@ public class Attempt {
     public void setDifficulty(String difficulty) {
         this.difficulty = difficulty;
     }
+
+    public String getVisitorId() {
+        return visitorId;
+    }
+
+    public void setVisitorId(String visitorId) {
+        this.visitorId = visitorId;
+    }
+
+    public Boolean getSkipped() { return skipped; }
+    public void setSkipped(Boolean skipped) { this.skipped = skipped; }
 }

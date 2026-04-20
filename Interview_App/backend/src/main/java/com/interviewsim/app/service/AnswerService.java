@@ -25,7 +25,7 @@ public class AnswerService {
         this.attemptRepository = attemptRepository;
     }
 
-    public AnswerResponse evaluateAnswer(AnswerRequest request) {
+    public AnswerResponse evaluateAnswer(AnswerRequest request, String visitorId) {
         Question question = questionRepository.findById(request.questionId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Question not found"));
 
@@ -38,20 +38,18 @@ public class AnswerService {
             score = 0;
             feedback = "Time's up! You didn't provide an answer.";
         } else if ("MCQ".equalsIgnoreCase(question.getType())) {
-            // Strict binary scoring for MCQs
             boolean isCorrect = normalizedAnswer.equalsIgnoreCase(question.getReferenceAnswer().trim());
             score = isCorrect ? 10 : 1;
-            feedback = isCorrect 
-                ? "Correct! You identified the right answer among the options." 
+            feedback = isCorrect
+                ? "Correct! You identified the right answer among the options."
                 : "Incorrect. The selected option doesn't match the expected answer.";
         } else {
-            // Scoring for TEXT, CODE, and BUG
             int baseScore = answerLength > 30 ? 6 : 4;
             int bonus = containsStructuredThinking(normalizedAnswer) ? 1 : 0;
             int referenceCoverageBonus = computeReferenceCoverageBonus(normalizedAnswer, question.getReferenceAnswer());
             int randomVariation = ThreadLocalRandom.current().nextInt(-1, 3);
             score = Math.max(1, Math.min(10, baseScore + bonus + referenceCoverageBonus + randomVariation));
-            
+
             if ("CODE".equalsIgnoreCase(question.getType()) || "BUG".equalsIgnoreCase(question.getType())) {
                 feedback = buildTechnicalFeedback(normalizedAnswer, score);
             } else {
@@ -60,12 +58,13 @@ public class AnswerService {
         }
 
         attemptRepository.save(new Attempt(
-                question.getId(), 
-                normalizedAnswer, 
-                score, 
-                feedback, 
-                question.getCategory(), 
-                question.getDifficulty()
+                question.getId(),
+                normalizedAnswer,
+                score,
+                feedback,
+                question.getCategory(),
+                question.getDifficulty(),
+                visitorId
         ));
 
         return new AnswerResponse(score, feedback, question.getReferenceAnswer());

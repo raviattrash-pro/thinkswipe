@@ -17,7 +17,8 @@ public final class InterviewQuestionCatalog {
                         "Easy",
                         "8080",
                         "MCQ",
-                        "8080, 80, 443, 3000"
+                        "8080, 80, 443, 3000",
+                        "Amazon"
                 ),
                 new Question(
                         "Which annotation is used to enable auto-configuration in Spring Boot?",
@@ -25,7 +26,8 @@ public final class InterviewQuestionCatalog {
                         "Easy",
                         "@EnableAutoConfiguration",
                         "MCQ",
-                        "@SpringBootApplication, @EnableAutoConfiguration, @Configuration, @Component"
+                        "@SpringBootApplication, @EnableAutoConfiguration, @Configuration, @Component",
+                        "Google"
                 ),
                 new Question(
                         "Which interface must be implemented to create a thread by extending a class?",
@@ -33,7 +35,8 @@ public final class InterviewQuestionCatalog {
                         "Easy",
                         "None, you should extend Thread or implement Runnable",
                         "MCQ",
-                        "Runnable, Serializable, Thread, Cloneable"
+                        "Runnable, Serializable, Thread, Cloneable",
+                        "Microsoft"
                 ),
 
                 // --- CODE OUTPUT EXAMPLES ---
@@ -43,7 +46,8 @@ public final class InterviewQuestionCatalog {
                         "Medium",
                         "30 Output",
                         "CODE",
-                        null
+                        "public class Solution {\n    public static void main(String[] args) {\n        int a = 10;\n        int b = 20;\n        System.out.println(a + b + \" Output\");\n    }\n}",
+                        "Amazon"
                 ),
                 new Question(
                         "Predict the result:\n\nInteger x = 127;\nInteger y = 127;\nSystem.out.println(x == y);",
@@ -51,7 +55,8 @@ public final class InterviewQuestionCatalog {
                         "Medium",
                         "true (due to Integer caching)",
                         "CODE",
-                        null
+                        "public class Solution {\n    public static void main(String[] args) {\n        Integer x = 127;\n        Integer y = 127;\n        System.out.println(x == y);\n    }\n}",
+                        "Meta"
                 ),
 
                 // --- BUG DETECTION EXAMPLES ---
@@ -3344,7 +3349,118 @@ public final class InterviewQuestionCatalog {
                         "What is 'Smoke Testing'?",
                         "Testing",
                         "Easy",
-                        "High-level testing to ensure the most critical functions of an application work after a build or deployment.")
+                        "High-level testing to ensure the most critical functions of an application work after a build or deployment."),
+
+                // --- NEW COMPANY TAGGED QUESTIONS (POLISH) ---
+                new Question(
+                        "How would you design a rate limiter for Zomato's checkout API?",
+                        "System Design",
+                        "Hard",
+                        "Use Token Bucket or Leaky Bucket algorithm with Redis to track requests per minute per userId.",
+                        "Zomato"
+                ),
+                new Question(
+                        "Explain the difference between Optimistic and Pessimistic locking in a high-concurrency app like Swiggy.",
+                        "Database",
+                        "Medium",
+                        "Optimistic locking uses a version field and is preferred for rare collisions. Pessimistic locking locks the row, ensuring data consistency for frequent updates.",
+                        "Swiggy"
+                ),
+                new Question(
+                        "Write a Java function to find the first non-repeating character in a stream of characters (Uber coding round).",
+                        "Coding",
+                        "Medium",
+                        "public class Solution {\n    public static char firstUnique(String s) {\n        int[] counts = new int[256];\n        for(char c : s.toCharArray()) counts[c]++;\n        for(char c : s.toCharArray()) if(counts[c] == 1) return c;\n        return '\\0';\n    }\n}",
+                        "CODE",
+                        null,
+                        "Uber"
+                ),
+                new Question(
+                        "Explain @Scope('prototype') in Spring with a real-world use case for Flipkart's shopping cart.",
+                        "Spring Boot",
+                        "Medium",
+                        "Prototype scope creates a new instance every time a bean is requested. Used for stateful cart objects that shouldn't be shared across users.",
+                        "Flipkart"
+                ),
+                new Question(
+                        "How do you handle double payment issues in digital wallets like Paytm?",
+                        "Security",
+                        "Hard",
+                        "Idempotency keys! Each transaction request must have a unique key so retries don't trigger duplicate deductions.",
+                        "Paytm"
+                ),
+                new Question(
+                        "What is the time complexity of searching an element in a HashMap in the worst case (Java 8+)?",
+                        "Java",
+                        "Medium",
+                        "O(log n) because bins are converted to Balanced Trees when they exceed 8 elements.",
+                        "PhonePe"
+                ),
+                new Question(
+                        "Explain how Zookeeper is used in Distributed Systems (Swiggy infrastructure).",
+                        "Infrastructure",
+                        "Hard",
+                        "Used for service discovery, configuration management, and leader election for Kafka or internal microservices.",
+                        "Swiggy"
+                ),
+                new Question(
+                        "Compare Kafka and RabbitMQ for real-time delivery tracking at Zomato.",
+                        "System Design",
+                        "Hard",
+                        "Kafka is better for high-throughput log-based events (replayable). RabbitMQ is better for complex routing and priority queues.",
+                        "Zomato"
+                ),
+                new Question(
+                        "Why is immutability preferred for concurrent applications at CRED?",
+                        "Java",
+                        "Medium",
+                        "Immutable objects are thread-safe by design, eliminating synchronization overhead and hidden state mutation bugs.",
+                        "CRED"
+                ),
+                new Question(
+                        "How would you implement a simple LRU Cache in Java (Flipkart interview)?",
+                        "Coding",
+                        "Hard",
+                        "public class LRU {\n    // Use LinkedHashMap with accessOrder=true\n    // and override removeEldestEntry to return true when size > capacity\n}",
+                        "CODE",
+                        null,
+                        "Flipkart"
+                ),
+                new Question(
+                        "What is the difference between @Autowired and @Inject?",
+                        "Spring Boot",
+                        "Easy",
+                        "@Autowired is Spring-specific; @Inject is standard (JSR-330). Both achieve constructor/field injection.",
+                        "Swiggy"
+                ),
+                new Question(
+                        "Explain 'Fail-Fast' vs 'Fail-Safe' iterators with examples.",
+                        "Java",
+                        "Medium",
+                        "Fail-fast (ArrayList) throws ConcurrentModificationException if modified. Fail-safe (CopyOnWriteArrayList) works on a clone.",
+                        "PhonePe"
+                ),
+                new Question(
+                        "How does @Async work internally in Spring Boot?",
+                        "Spring Boot",
+                        "Medium",
+                        "It uses a proxy and an TaskExecutor thread pool to run the method in a separate thread asynchronously.",
+                        "Zomato"
+                ),
+                new Question(
+                        "Explain ACID properties with respect to a money transfer in Paytm.",
+                        "Database",
+                        "Easy",
+                        "Atomicity (all or nothing), Consistency (valid state), Isolation (independent), Durability (persisted).",
+                        "Paytm"
+                ),
+                new Question(
+                        "What is a 'Thread Dump' and when do you use it at Uber?",
+                        "Java",
+                        "Medium",
+                        "A snapshot of all active threads. Used for debugging deadlocks, CPU spikes, or hung states in production.",
+                        "Uber"
+                )
         );
     }
 }
