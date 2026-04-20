@@ -106,32 +106,51 @@ export const pingVisitor = async (platform, questionsAttempted) => {
   }
 };
 
-// --- ADMIN (requires token header) ---
-const ADMIN_TOKEN = "admin123";
-const adminHeaders = { "X-Admin-Token": ADMIN_TOKEN };
+// --- ADMIN (requires token from session) ---
+const getAdminHeaders = () => ({
+  "X-Admin-Token": sessionStorage.getItem("admin_token")
+});
+
+export const adminLogin = async (username, password) => {
+  const response = await api.post("/admin/login", { username, password });
+  if (response.data.success) {
+    sessionStorage.setItem("admin_token", response.data.token);
+  }
+  return response.data;
+};
+
+export const adminChangePassword = async (newPassword) => {
+  const response = await api.post("/admin/change-password", { newPassword }, {
+    headers: getAdminHeaders()
+  });
+  if (response.data.newToken) {
+    sessionStorage.setItem("admin_token", response.data.newToken);
+  }
+  return response.data;
+};
 
 export const fetchAdminStats = async () => {
-  const response = await api.get("/admin/stats", { headers: adminHeaders });
+  const response = await api.get("/admin/stats", { headers: getAdminHeaders() });
   return response.data;
 };
 
 export const fetchAdminAnalyticsQuestions = async () => {
-  const response = await api.get("/admin/analytics/questions", { headers: adminHeaders });
+  const response = await api.get("/admin/analytics/questions", { headers: getAdminHeaders() });
   return response.data;
 };
 
 export const fetchAdminAnalyticsRetention = async () => {
-  const response = await api.get("/admin/analytics/retention", { headers: adminHeaders });
+  const response = await api.get("/admin/analytics/retention", { headers: getAdminHeaders() });
   return response.data;
 };
 
 export const fetchAdminAnalyticsFunnel = async () => {
-  const response = await api.get("/admin/analytics/funnel", { headers: adminHeaders });
+  const response = await api.get("/admin/analytics/funnel", { headers: getAdminHeaders() });
   return response.data;
 };
 
 export const fetchAdminAnalyticsPopular = async () => {
-  const response = await api.get("/admin/analytics/popular", { headers: adminHeaders });
+  const response = await api.get("/admin/analytics/popular", { headers: getAdminHeaders() });
   return response.data;
 };
 
@@ -139,42 +158,42 @@ export const bulkImportQuestions = async (file) => {
   const formData = new FormData();
   formData.append("file", file);
   const response = await api.post("/admin/questions/bulk-import", formData, {
-    headers: { ...adminHeaders, "Content-Type": "multipart/form-data" }
+    headers: { ...getAdminHeaders(), "Content-Type": "multipart/form-data" }
   });
   return response.data;
 };
 
 export const fetchAdminSubmissions = async () => {
-  const response = await api.get("/admin/submissions", { headers: adminHeaders });
+  const response = await api.get("/admin/submissions", { headers: getAdminHeaders() });
   return response.data;
 };
 
 export const approveSubmission = async (id) => {
-  const response = await api.post(`/admin/submissions/${id}/approve`, {}, { headers: adminHeaders });
+  const response = await api.post(`/admin/submissions/${id}/approve`, {}, { headers: getAdminHeaders() });
   return response.data;
 };
 
 export const deleteSubmission = async (id) => {
-  const response = await api.delete(`/admin/submissions/${id}`, { headers: adminHeaders });
+  const response = await api.delete(`/admin/submissions/${id}`, { headers: getAdminHeaders() });
   return response.data;
 };
 
 export const fetchAdminComments = async () => {
-  const response = await api.get("/admin/comments", { headers: adminHeaders });
+  const response = await api.get("/admin/comments", { headers: getAdminHeaders() });
   return response.data;
 };
 
 export const approveComment = async (id) => {
-  const response = await api.post(`/admin/comments/${id}/approve`, {}, { headers: adminHeaders });
+  const response = await api.post(`/admin/comments/${id}/approve`, {}, { headers: getAdminHeaders() });
   return response.data;
 };
 
 export const deleteComment = async (id) => {
-  const response = await api.delete(`/admin/comments/${id}`, { headers: adminHeaders });
+  const response = await api.delete(`/admin/comments/${id}`, { headers: getAdminHeaders() });
   return response.data;
 };
 
 export const fetchAdminVisitors = async () => {
-  const response = await api.get("/admin/visitors", { headers: adminHeaders });
+  const response = await api.get("/admin/visitors", { headers: getAdminHeaders() });
   return response.data;
 };

@@ -9,23 +9,24 @@ import org.springframework.context.annotation.Configuration;
 public class DataLoader {
 
     @Bean
-    CommandLineRunner seedQuestions(QuestionRepository questionRepository) {
+    CommandLineRunner seedData(QuestionRepository questionRepository, com.interviewsim.app.repository.AdminAccountRepository adminRepo) {
         return args -> {
+            // Seed Questions
             var catalog = InterviewQuestionCatalog.build();
             long count = questionRepository.count();
             
-            System.out.println("DB Question Count: " + count);
-            System.out.println("Catalog Size: " + catalog.size());
-
-            if (count == catalog.size()) {
-                System.out.println("Database is already up to date with the catalog.");
-                return;
+            if (count != catalog.size()) {
+                System.out.println("Detected catalog change. Re-seeding database...");
+                questionRepository.deleteAllInBatch();
+                questionRepository.saveAll(catalog);
+                System.out.println("Successfully seeded " + catalog.size() + " questions.");
             }
 
-            System.out.println("Detected catalog change. Re-seeding database...");
-            questionRepository.deleteAllInBatch();
-            questionRepository.saveAll(catalog);
-            System.out.println("Successfully seeded " + catalog.size() + " questions.");
+            // Seed Admin
+            if (adminRepo.count() == 0) {
+                adminRepo.save(new com.interviewsim.app.model.AdminAccount("admin", "admin123"));
+                System.out.println("Default admin account created: admin / admin123");
+            }
         };
     }
 }

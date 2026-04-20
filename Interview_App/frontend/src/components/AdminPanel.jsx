@@ -3,11 +3,8 @@ import {
   fetchAdminStats, fetchAdminSubmissions, approveSubmission, deleteSubmission,
   fetchAdminComments, approveComment, deleteComment, fetchAdminVisitors,
   fetchAdminAnalyticsQuestions, fetchAdminAnalyticsRetention, fetchAdminAnalyticsFunnel,
-  fetchAdminAnalyticsPopular, bulkImportQuestions
+  fetchAdminAnalyticsPopular, bulkImportQuestions, adminLogin, adminChangePassword
 } from "../api";
-
-const ADMIN_PASSWORD = "admin123";
-const ADMIN_USER = "admin";
 
 export default function AdminPanel({ onExit }) {
   const [authed, setAuthed] = useState(() => sessionStorage.getItem("admin_auth") === "true");
@@ -33,12 +30,33 @@ export default function AdminPanel({ onExit }) {
     setTimeout(() => setToast(null), 3000);
   };
 
-  const handleLogin = () => {
-    if (loginForm.user === ADMIN_USER && loginForm.pass === ADMIN_PASSWORD) {
-      sessionStorage.setItem("admin_auth", "true");
-      setAuthed(true);
-    } else {
-      setLoginError("Invalid credentials. Try admin / admin123");
+  const handleLogin = async () => {
+    try {
+      const res = await adminLogin(loginForm.user, loginForm.pass);
+      if (res.success) {
+        sessionStorage.setItem("admin_auth", "true");
+        setAuthed(true);
+      }
+    } catch (e) {
+      setLoginError("Invalid credentials.");
+    }
+  };
+
+  const [newPassForm, setNewPassForm] = useState({ newPass: "", confirmPass: "" });
+
+  const handlePasswordChange = async () => {
+    if (!newPassForm.newPass) return showToast("Password cannot be empty", "error");
+    if (newPassForm.newPass !== newPassForm.confirmPass) return showToast("Passwords do not match", "error");
+    
+    setLoading(true);
+    try {
+      await adminChangePassword(newPassForm.newPass);
+      showToast("Password updated successfully!");
+      setNewPassForm({ newPass: "", confirmPass: "" });
+    } catch (e) {
+      showToast("Failed to update password", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -155,6 +173,7 @@ export default function AdminPanel({ onExit }) {
             { key: "submissions", icon: "📝", label: `Submissions` },
             { key: "comments", icon: "💬", label: "Comments" },
             { key: "visitors", icon: "👁️", label: "Visitors" },
+            { key: "security", icon: "🔐", label: "Security" },
           ].map(item => (
             <button
               key={item.key}
@@ -399,6 +418,39 @@ export default function AdminPanel({ onExit }) {
                   ))}
                 </tbody>
               </table>
+            </div>
+          </div>
+        )}
+
+        {/* SECURITY */}
+        {tab === "security" && (
+          <div className="admin-section fade-in">
+            <h1 className="admin-section-title">🔐 Security Settings</h1>
+            <div className="glass-card" style={{ maxWidth: "400px", padding: "30px" }}>
+              <h3 style={{ marginBottom: "20px" }}>Change Admin Password</h3>
+              <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+                <input 
+                  className="admin-input" 
+                  type="password" 
+                  placeholder="New Password" 
+                  value={newPassForm.newPass}
+                  onChange={e => setNewPassForm(p => ({ ...p, newPass: e.target.value }))}
+                />
+                <input 
+                  className="admin-input" 
+                  type="password" 
+                  placeholder="Confirm New Password" 
+                  value={newPassForm.confirmPass}
+                  onChange={e => setNewPassForm(p => ({ ...p, confirmPass: e.target.value }))}
+                />
+                <button 
+                  className="admin-login-btn" 
+                  style={{ marginTop: "10px" }}
+                  onClick={handlePasswordChange}
+                >
+                  Update Password
+                </button>
+              </div>
             </div>
           </div>
         )}

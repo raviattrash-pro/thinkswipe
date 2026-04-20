@@ -20,14 +20,13 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/admin")
 public class AdminController {
 
-    private static final String ADMIN_TOKEN = "admin123";
-
     private final UserSubmissionRepository submissionRepo;
     private final UserCommentRepository commentRepo;
     private final PageViewRepository pageViewRepo;
     private final AttemptRepository attemptRepo;
     private final QuestionRepository questionRepo;
     private final QuestionService questionService;
+    private final AdminAccountRepository adminRepo;
 
     public AdminController(
             UserSubmissionRepository submissionRepo,
@@ -35,19 +34,54 @@ public class AdminController {
             PageViewRepository pageViewRepo,
             AttemptRepository attemptRepo,
             QuestionRepository questionRepo,
-            QuestionService questionService) {
+            QuestionService questionService,
+            AdminAccountRepository adminRepo) {
         this.submissionRepo = submissionRepo;
         this.commentRepo = commentRepo;
         this.pageViewRepo = pageViewRepo;
         this.attemptRepo = attemptRepo;
         this.questionRepo = questionRepo;
         this.questionService = questionService;
+        this.adminRepo = adminRepo;
     }
 
     private void checkAuth(String token) {
-        if (token == null || !token.equals(ADMIN_TOKEN)) {
+        // In this simple system, the token is the password in the DB
+        var admin = adminRepo.findByUsername("admin")
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Admin account missing"));
+        
+        if (token == null || !token.equals(admin.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
+    }
+
+    @PostMapping("/login")
+    public Map<String, Object> login(@RequestBody Map<String, String> credentials) {
+        String username = credentials.get("username");
+        String password = credentials.get("password");
+
+        var admin = adminRepo.findByUsername(username);
+        if (admin.isPresent() && admin.get().getPassword().equals(password)) {
+            return Map.of("success", true, "token", password);
+        }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+    }
+
+    @PostMapping("/change-password")
+    public Map<String, String> changePassword(
+            @RequestHeader(value = "X-Admin-Token", required = false) String token,
+            @RequestBody Map<String, String> body) {
+        checkAuth(token);
+        String newPassword = body.get("newPassword");
+        if (newPassword == null || newPassword.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "New password cannot be empty");
+        }
+
+        var admin = adminRepo.findByUsername("admin").get();
+        admin.setPassword(newPassword);
+        adminRepo.save(admin);
+
+        return Map.of("message", "Password updated successfully", "newToken", newPassword);
     }
 
     // --- OVERVIEW STATS ---
