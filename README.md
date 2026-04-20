@@ -15,24 +15,30 @@ The ThinkSwipe architecture is built for global low-latency and high availabilit
 ```mermaid
 graph TD
     User((User)) -->|HTTPS| Frontend[Vercel Global Edge]
-    User -->|API Request| LB[Cloudflare Worker LB]
+    User -->|API Request| LB[Cloudflare Worker Proxy]
+    
+    subgraph "Intelligent Edge Proxy (Cloudflare)"
+        LB -->|Strip /api| P1[Prefix Stripping]
+        LB -->|Allow Headers| P2[CORS Policy Engine]
+        P1 & P2 --> Proxy[Forwarded Request]
+    end
     
     subgraph "Global Backend Mesh (Render)"
-        LB -->|Weighted Hash| R1[Render Instance 1]
-        LB -->|Weighted Hash| R2[Render Instance 2]
-        LB -->|Weighted Hash| R3[Render Instance 3]
-        LB -->|Weighted Hash| R4[Render Instance 4]
+        Proxy -->|Weighted Hash| R1[Render Instance 1]
+        Proxy -->|Weighted Hash| R2[Render Instance 2]
+        Proxy -->|Weighted Hash| R3[Render Instance 3]
+        Proxy -->|Weighted Hash| R4[Render Instance 4]
     end
     
     subgraph "Database Infrastructure (TiDB Cloud)"
-        R1 & R2 & R3 & R4 -->|Primary Connection| P_DB[(Primary TiDB - Asia)]
+        R1 & R2 & R3 & R4 -->|Auth & Persistence| P_DB[(Primary TiDB - Asia)]
         P_DB -.->|Daily Async Sync| S_DB[(Secondary TiDB - Europe)]
     end
     
-    subgraph "Monitoring & Automation"
+    subgraph "Security & Monitoring"
+        LB -->|Admin Auth| Admin[(Admin Security Layer)]
         Health[Uptime Robot] -->|Pings| LB
         GH[GitHub Actions] -->|Keep-Alive| R1 & R2 & R3 & R4
-        GH -->|Daily Backup| P_DB
     end
 ```
 
@@ -138,6 +144,56 @@ cd Interview_App/frontend
 npm install
 npm run dev
 ```
+
+---
+
+## 🚀 Latest System Enhancements (April 2026)
+
+### 1. Robust Backend Stability & Health Check
+- **VAPID Safety**: Implemented safety guards in `PushController` to prevent backend initialization crashes with placeholder keys.
+- **Root Health Check**: Added a `/` root controller to provide instant health status (`{"status": "online"}`).
+
+### 2. Intelligent Edge Proxy (Cloudflare Worker)
+- **Automatic Prefix Stripping**: The worker now intelligently detects and strips the `/api` prefix before forwarding requests to the Spring Boot backends, ensuring zero 404 errors.
+- **Advanced CORS Management**: Expanded header whitelist to include `X-Visitor-Id` and `X-Admin-Token`, enabling seamless cross-origin administration.
+
+### 3. Secure Admin Infrastructure
+Move beyond hardcoded tokens with our new persistent security layer:
+- **Database-Backed Admin**: Admin credentials are now persisted in the TiDB cluster, making them tamper-proof and private.
+
+<p align="center">
+  <img src="./docs/images/admin_security.png" width="600" alt="Secure Admin Portal" />
+</p>
+
+- **Admin Security Flow (LLD)**:
+  ```mermaid
+  sequenceDiagram
+      participant Admin
+      participant Worker
+      participant Backend
+      participant TiDB
+      
+      Admin->>Worker: POST /api/admin/login (Credentials)
+      Worker->>Backend: POST /admin/login (Stripped Prefix)
+      Backend->>TiDB: Query Admin Account
+      TiDB-->>Backend: Account Data
+      Backend-->>Admin: Success + Dynamic Token
+      Admin->>Worker: Request + X-Admin-Token
+      Worker->>Backend: Forward Authorized Request
+  ```
+
+### 4. Advanced UX: Swipe Gesture System
+Implement a native-like experience on mobile with our custom gesture pipeline:
+- **Action**: Swipe Up on the main feed to trigger `handleSkip`.
+- **LLD Event Pipeline**:
+  ```mermaid
+  graph LR
+      TouchStart[onTouchStart] --> StoreY[Record ClientY]
+      TouchEnd[onTouchEnd] --> Calc[Calculate DeltaY]
+      Calc --> Threshold{DeltaY > 70px?}
+      Threshold -->|Yes| Skip[Invoke handleSkip]
+      Threshold -->|No| Cancel[Reset Gesture]
+  ```
 
 ---
 
