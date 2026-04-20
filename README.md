@@ -79,7 +79,25 @@ Get immediate feedback on your answers with a proprietary scoring algorithm.
   <img src="./docs/images/eval.png" width="500" alt="AI Evaluation Feature" />
 </p>
 
-### 3. Progressive Web App (PWA)
+### 3. Global Leaderboard
+Track your progress against top engineers worldwide with our real-time competitive ranking system.
+- **Rankings**: Gain XP for every high-score attempt and climb the global ranks.
+- **Visuals**: Modern, neon-infused UI designed for high-signal achievement tracking.
+
+<p align="center">
+  <img src="./docs/images/leaderboard_ui.png" width="500" alt="Global Leaderboard" />
+</p>
+
+### 4. Daily Challenge Quest
+Build a consistent habit with daily curated challenges across critical engineering disciplines.
+- **Persistence**: Track your streak and complete daily quests to earn bonus XP.
+- **Curated Content**: Every day features a new, high-value problem from top-tier tech firms.
+
+<p align="center">
+  <img src="./docs/images/daily_challenge.png" width="500" alt="Daily Challenge Quest" />
+</p>
+
+### 5. Progressive Web App (PWA)
 Install ThinkSwipe on any device for a native-like experience with offline capabilities and instant loading.
 
 ---
