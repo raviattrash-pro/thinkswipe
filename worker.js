@@ -85,7 +85,15 @@ async function fetchWithTimeout(url, init, timeoutMs) {
 
 async function proxyToBackend(request, backend) {
   const incomingUrl = new URL(request.url);
-  const targetUrl = new URL(incomingUrl.pathname + incomingUrl.search, backend.url);
+  
+  // Strip /api prefix if present for backend compatibility
+  let pathname = incomingUrl.pathname;
+  if (pathname.startsWith("/api")) {
+    pathname = pathname.substring(4);
+    if (!pathname.startsWith("/")) pathname = "/" + pathname;
+  }
+  
+  const targetUrl = new URL(pathname + incomingUrl.search, backend.url);
 
   const headers = new Headers(request.headers);
   headers.delete("host");
