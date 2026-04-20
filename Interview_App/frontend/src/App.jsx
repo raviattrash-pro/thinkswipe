@@ -195,6 +195,12 @@ function App() {
     return () => window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
   }, []);
 
+  // Visitor Tracking Ping
+  useEffect(() => {
+    const platform = window.innerWidth <= 768 ? "MOBILE" : "DESKTOP";
+    pingVisitor(platform, 0);
+  }, []);
+
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
