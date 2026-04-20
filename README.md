@@ -107,9 +107,6 @@ ThinkSwipe uses a distributed pool of backends to handle load:
 - **9mg2-render3**: `https://thinkswipe-9mg2.onrender.com`
 - **i5tn-render4**: `https://thinkswipe-i5tn.onrender.com`
 
-### Load Balancer & Edge
-The master endpoint is managed by a Cloudflare Worker performing weighted round-robin distribution:
-- **Endpoint**: `https://winter-lake-7b8f.raviattrash2-thinkswipe1.workers.dev`
 
 ### Reliability & Uptime
 - **Keep-Alive**: A 14-minute interval GitHub Action ensures Render backends never go into sleep mode.
