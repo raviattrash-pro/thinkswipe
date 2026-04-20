@@ -2232,3 +2232,18 @@ body {
 }
 .action-btn.submit-btn:hover, .action-btn.share-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37,244,238,0.5); }
 .challenge-feedback { text-align: center; font-size: 1.1rem; font-weight: 800; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.5); margin-bottom: 20px; }
+
+/* MISTAKE BADGE */
+.mistake-count-badge {
+  background: var(--tiktok-pink);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 99px;
+  margin-left: 6px;
+  display: inline-block;
+  vertical-align: middle;
+  box-shadow: 0 0 10px rgba(254, 44, 85, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}

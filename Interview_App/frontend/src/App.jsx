@@ -259,6 +259,12 @@ function App() {
       } else {
         playSound("error");
         setStreak(0);
+        // Add to mistakes if not already there
+        if (!mistakes.find(m => m.id === currentQuestion.id)) {
+          const newMistakes = [currentQuestion, ...mistakes].slice(0, 50);
+          setMistakes(newMistakes);
+          localStorage.setItem("interview_mistakes", JSON.stringify(newMistakes));
+        }
       }
       
       setSessionStats(prev => ({ ...prev, total: prev.total + 1, xp: prev.xp + res.score }));
@@ -324,7 +330,9 @@ function App() {
             </div>
 
             <div className="nav-buttons">
-              <button className={feedMode === "following" ? "active" : ""} onClick={() => setFeedMode("following")}>Mistakes</button>
+              <button className={feedMode === "following" ? "active" : ""} onClick={() => setFeedMode("following")}>
+                Mistakes {mistakes.length > 0 && <span className="mistake-count-badge">{mistakes.length}</span>}
+              </button>
               <button className={feedMode === "foryou" ? "active" : ""} onClick={() => setFeedMode("foryou")}>For You</button>
             </div>
 

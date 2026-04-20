@@ -33,9 +33,19 @@ public class PushController {
     }
 
     @PostConstruct
-    public void init() throws Exception {
-        Security.addProvider(new BouncyCastleProvider());
-        pushService = new PushService(publicKey, privateKey, subject);
+    public void init() {
+        try {
+            if (publicKey == null || publicKey.isEmpty() || publicKey.contains("EXAMPLE") ||
+                privateKey == null || privateKey.isEmpty() || privateKey.contains("EXAMPLE")) {
+                System.err.println("WebPush keys are still placeholders (EXAMPLE). Push notifications disabled.");
+                return;
+            }
+            Security.addProvider(new BouncyCastleProvider());
+            pushService = new PushService(publicKey, privateKey, subject);
+            System.out.println("WebPush service initialized successfully.");
+        } catch (Exception e) {
+            System.err.println("WebPush keys are invalid or missing. Push notifications disabled. (" + e.getMessage() + ")");
+        }
     }
 
     @PostMapping("/subscribe")
@@ -49,9 +59,12 @@ public class PushController {
         repository.save(sub);
     }
 
-    @PostMapping("/send/{visitorId}")
-    public void sendNotification(@PathVariable String visitorId, @RequestBody Map<String, String> payload) throws Exception {
+    public void sendNotification(@PathVariable String visitorId, @RequestBody Map<String, String> payload) {
         repository.findByVisitorId(visitorId).ifPresent(sub -> {
+            if (pushService == null) {
+                System.err.println("Cannot send notification: PushService not initialized.");
+                return;
+            }
             try {
                 Notification notification = new Notification(
                         sub.getEndpoint(),
