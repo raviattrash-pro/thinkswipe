@@ -12,6 +12,9 @@ import CompanyFilter from "./components/CompanyFilter";
 import Leaderboard from "./components/Leaderboard";
 import DailyChallenge from "./components/DailyChallenge";
 import CodeSandbox from "./components/CodeSandbox";
+import StreakCalendar from "./components/StreakCalendar";
+import { BadgeUnlockModal, BadgeShowcase } from "./components/BadgeComponents";
+import { evaluateBadges } from "./utils/badges";
 
 // Audio Assets (using placeholders or CDN)
 const SOUNDS = {
@@ -1734,6 +1737,10 @@ function App() {
   const [backendReady, setBackendReady] = useState(false);
   const [offlineMode, setOfflineMode] = useState(false);
   const [backendToast, setBackendToast] = useState(null); // null | 'connecting' | 'online' | 'offline'
+  const [unlockedBadges, setUnlockedBadges] = useState([]); // newly unlocked badges to celebrate
+  const [showBadgeShowcase, setShowBadgeShowcase] = useState(false);
+  const [showStreakCalendar, setShowStreakCalendar] = useState(false);
+  const questionStartTimeRef = useRef(Date.now());
   
   // Phase 2 New State
   const [showDaily, setShowDaily] = useState(false);
@@ -2000,8 +2007,19 @@ function App() {
         }
       }
       
-      setSessionStats(prev => ({ ...prev, total: prev.total + 1, xp: prev.xp + res.score }));
-      localStorage.setItem("interview_xp", (sessionStats.xp + res.score).toString());
+      const newXp = sessionStats.xp + res.score;
+      setSessionStats(prev => ({ ...prev, total: prev.total + 1, xp: newXp }));
+      localStorage.setItem("interview_xp", newXp.toString());
+
+      // ── Evaluate badges after every answer ──────────────────
+      const newBadges = evaluateBadges({
+        score: res.score,
+        category: currentQuestion?.category,
+        streak: res.score >= 7 ? streak + 1 : 0,
+        xp: newXp,
+        startTime: questionStartTimeRef.current,
+      });
+      if (newBadges.length > 0) setUnlockedBadges(newBadges);
     } catch (e) {
       setError("Connection error");
     } finally {
@@ -2021,6 +2039,7 @@ function App() {
       setConfidence(null);
       setTimerValue(60);
       setTimerActive(true);
+      questionStartTimeRef.current = Date.now(); // reset timer for speed badges
     }, 400);
   };
 
@@ -2089,7 +2108,7 @@ function App() {
       {!isLoading && (
         <main className={`feed-item ${slideDir ? `slide-${slideDir}` : ""}`}>
           <nav className="top-nav">
-            <div className="top-left-profile" onClick={() => setShowLeaderboard(true)}>
+            <div className="top-left-profile" onClick={() => setShowStreakCalendar(true)} title="View your streak calendar">
               <div className="boss-avatar" style={{ fontSize: '0.65rem', fontWeight: 'bold' }}>{getVisitorId().substring(0, 4)}</div>
               <div className="level-badge">Lvl {levelInfo(sessionStats.xp).lvl}</div>
             </div>
@@ -2227,6 +2246,10 @@ function App() {
               <div className="icon-btn leader">🏆</div>
               <span>Rank</span>
             </div>
+            <div className="action-item" onClick={() => setShowBadgeShowcase(true)}>
+              <div className="icon-btn badge-btn">🏅</div>
+              <span>Badges</span>
+            </div>
             <div className="action-item" onClick={() => setShowDaily(true)}>
               <div className="icon-btn daily">🌟</div>
               <span>Daily</span>
@@ -2257,6 +2280,14 @@ function App() {
       {/* MODALS */}
       {showDaily && <DailyChallenge onClose={() => setShowDaily(false)} />}
       {showLeaderboard && <Leaderboard onClose={() => setShowLeaderboard(false)} />}
+      {showStreakCalendar && <StreakCalendar onClose={() => setShowStreakCalendar(false)} />}
+      {showBadgeShowcase && <BadgeShowcase onClose={() => setShowBadgeShowcase(false)} />}
+      {unlockedBadges.length > 0 && (
+        <BadgeUnlockModal
+          badges={unlockedBadges}
+          onClose={() => setUnlockedBadges([])}
+        />
+      )}
       {showSearch && (
         <div className="search-overlay">
           <SearchBar onResults={setSearchResults} onClose={() => { setShowSearch(false); setSearchResults(null); }} />

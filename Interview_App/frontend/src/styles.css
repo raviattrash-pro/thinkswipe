@@ -2313,3 +2313,352 @@ body {
   to   { transform: rotate(360deg); }
 }
 
+
+/* ====================================================
+   STREAK CALENDAR
+   ==================================================== */
+:root {
+  --day-empty: rgba(255,255,255,0.06);
+  --day-low:   rgba(37,244,238,0.25);
+  --day-mid:   rgba(37,244,238,0.55);
+  --day-high:  rgba(37,244,238,0.9);
+}
+
+.streak-calendar-modal {
+  max-width: 400px;
+  width: calc(100vw - 40px);
+}
+
+.streak-stats {
+  display: flex;
+  justify-content: space-around;
+  padding: 14px 0 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  margin-bottom: 14px;
+}
+
+.streak-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.streak-stat-val {
+  font-size: 1.6rem;
+  font-weight: 950;
+  background: linear-gradient(to bottom, #fff, var(--tiktok-cyan));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1;
+}
+
+.streak-stat-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+.cal-day-labels {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.cal-day-letter {
+  text-align: center;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.3);
+  text-transform: uppercase;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  margin-bottom: 12px;
+}
+
+.cal-cell {
+  aspect-ratio: 1;
+  border-radius: 4px;
+  background: var(--day-empty);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: default;
+}
+
+.cal-cell.active {
+  box-shadow: 0 0 6px rgba(37,244,238,0.3);
+}
+
+.cal-cell.today {
+  outline: 2px solid rgba(255,255,255,0.6);
+  outline-offset: 1px;
+}
+
+.cal-cell:hover {
+  transform: scale(1.3);
+  z-index: 1;
+}
+
+.cal-legend {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.cal-legend-label {
+  font-size: 0.58rem;
+  color: rgba(255,255,255,0.35);
+  font-weight: 600;
+}
+
+.cal-legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.streak-tip {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.7);
+  text-align: center;
+  margin: 0;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 12px;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+
+/* ====================================================
+   BADGE UNLOCK CELEBRATION
+   ==================================================== */
+.badge-unlock-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeInOverlay 0.3s ease;
+}
+
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.badge-unlock-card {
+  background: rgba(10, 10, 20, 0.92);
+  border: 1px solid;
+  border-radius: 28px;
+  padding: 36px 32px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  width: min(360px, calc(100vw - 40px));
+  animation: badgeCardPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes badgeCardPop {
+  0%   { transform: scale(0.6) translateY(40px); opacity: 0; }
+  100% { transform: scale(1)   translateY(0);    opacity: 1; }
+}
+
+/* Confetti particles */
+.badge-confetti {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.confetti-dot {
+  position: absolute;
+  top: -8px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  animation: confettiFall 1.4s ease-in forwards;
+}
+
+@keyframes confettiFall {
+  0%   { transform: translateY(0)   rotate(0deg);   opacity: 1; }
+  100% { transform: translateY(130px) rotate(360deg); opacity: 0; }
+}
+
+.badge-unlock-label {
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin: 0 0 20px;
+}
+
+.badge-icon-ring {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 2px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.6rem;
+  margin: 0 auto 14px;
+  animation: ringPulse 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes ringPulse {
+  0%   { transform: scale(1);    }
+  100% { transform: scale(1.08); }
+}
+
+.badge-rarity-tag {
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin: 0 0 6px;
+}
+
+.badge-name {
+  font-size: 1.5rem;
+  font-weight: 950;
+  color: #fff;
+  margin: 0 0 8px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+.badge-desc {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.65);
+  margin: 0 0 20px;
+  line-height: 1.4;
+}
+
+.badge-more-hint {
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.4);
+  margin: 0 0 14px;
+}
+
+.badge-continue-btn {
+  background: transparent;
+  border: 1px solid;
+  border-radius: 99px;
+  padding: 10px 28px;
+  font-family: var(--primary-font);
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+
+.badge-continue-btn:hover {
+  filter: brightness(1.3);
+  transform: translateY(-2px);
+}
+
+
+/* ====================================================
+   BADGE SHOWCASE GRID
+   ==================================================== */
+.badge-showcase {
+  max-width: 420px;
+  width: calc(100vw - 40px);
+}
+
+.badge-showcase-count {
+  text-align: center;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.45);
+  font-weight: 700;
+  margin: 0 0 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-progress-bar {
+  height: 5px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 99px;
+  margin-bottom: 18px;
+  overflow: hidden;
+}
+
+.badge-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--tiktok-cyan), #b06ef3);
+  border-radius: 99px;
+  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  max-height: 55vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+.badge-grid::-webkit-scrollbar { display: none; }
+
+.badge-grid-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 6px;
+  border-radius: 14px;
+  border: 1px solid;
+  cursor: default;
+  transition: transform 0.2s;
+}
+
+.badge-grid-item.earned {
+  border-color: transparent;
+}
+
+.badge-grid-item.locked {
+  border-color: rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+  opacity: 0.5;
+}
+
+.badge-grid-item:hover {
+  transform: scale(1.05);
+}
+
+.badge-grid-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.badge-grid-name {
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-align: center;
+  line-height: 1.2;
+  color: rgba(255,255,255,0.8);
+}
+
+.badge-grid-rarity {
+  font-size: 0.48rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
