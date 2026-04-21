@@ -160,11 +160,21 @@ function App() {
 
     try {
       let data;
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error("Timeout")), 2000)
+      );
+
       if (activeCompany !== "All") {
-        data = await fetchByCompany(activeCompany);
+        data = await Promise.race([
+          fetchByCompany(activeCompany),
+          timeoutPromise
+        ]);
         setHasMore(false);
       } else {
-        data = await fetchQuestions(reset ? 0 : page + 1);
+        data = await Promise.race([
+          fetchQuestions(reset ? 0 : page + 1),
+          timeoutPromise
+        ]);
         setPage(prev => reset ? 0 : prev + 1);
         setHasMore(data.length === 20);
       }
