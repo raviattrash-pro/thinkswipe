@@ -15,9 +15,9 @@ import CodeSandbox from "./components/CodeSandbox";
 
 // Audio Assets (using placeholders or CDN)
 const SOUNDS = {
-  ding: new Audio("https://cdn.pixabay.com/audio/2022/03/24/audio_77ce981c4b.mp3"),
-  whoosh: new Audio("https://cdn.pixabay.com/audio/2022/03/10/audio_c3507fe083.mp3"),
-  error: new Audio("https://cdn.pixabay.com/audio/2021/08/04/audio_06d3184f47.mp3")
+  ding: new Audio("https://cdnjs.cloudflare.com/ajax/libs/ion-sound/3.0.7/sounds/button_tiny.mp3"),
+  whoosh: new Audio("https://cdnjs.cloudflare.com/ajax/libs/ion-sound/3.0.7/sounds/water_droplet_3.mp3"),
+  error: new Audio("https://cdnjs.cloudflare.com/ajax/libs/ion-sound/3.0.7/sounds/button_out.mp3")
 };
 
 const OFFLINE_QUESTIONS = [
