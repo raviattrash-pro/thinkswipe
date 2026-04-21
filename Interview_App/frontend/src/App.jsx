@@ -413,6 +413,7 @@ function App() {
                   <span>{currentQuestion?.category}</span>
                   <span>{currentQuestion?.difficulty}</span>
                   {currentQuestion?.company && <span className="company-tag">🏢 {currentQuestion.company}</span>}
+                  {offlineMode && <span className="offline-tag">OFFLINE</span>}
                 </div>
 
                 {currentQuestion?.type === "CODE" && (
@@ -420,6 +421,27 @@ function App() {
                     initialCode={currentQuestion.options} 
                     onAnswerChange={setAnswer} 
                   />
+                )}
+
+                {currentQuestion?.type === "MCQ" && currentQuestion?.options && (
+                  <div className="mcq-container" style={{ marginTop: '15px' }}>
+                    {(typeof currentQuestion.options === "string" 
+                      ? currentQuestion.options.split(",") 
+                      : currentQuestion.options
+                    ).map((opt, i) => (
+                      <button 
+                        key={i} 
+                        className={`choice-chip ${answer === opt ? "active glow-cyan" : ""}`}
+                        onClick={() => {
+                          setAnswer(opt);
+                          triggerHaptic(15);
+                          playSound("ding");
+                        }}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
                 )}
               </div>
             ) : (
@@ -460,7 +482,7 @@ function App() {
             )}
 
             <div className="input-section">
-              {result.score === null && currentQuestion?.type !== "CODE" && (
+              {result.score === null && currentQuestion?.type !== "CODE" && currentQuestion?.type !== "MCQ" && (
                 confidence === null ? (
                   <div className="confidence-selector">
                     <p>Ready to swipe? 🤔</p>
