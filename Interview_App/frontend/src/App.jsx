@@ -15,9 +15,9 @@ import CodeSandbox from "./components/CodeSandbox";
 
 // Audio Assets (using placeholders or CDN)
 const SOUNDS = {
-  ding: new Audio("https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3"),
-  whoosh: new Audio("https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"),
-  error: new Audio("https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3")
+  ding: new Audio("https://cdn.pixabay.com/audio/2022/03/24/audio_77ce981c4b.mp3"),
+  whoosh: new Audio("https://cdn.pixabay.com/audio/2022/03/10/audio_c3507fe083.mp3"),
+  error: new Audio("https://cdn.pixabay.com/audio/2021/08/04/audio_06d3184f47.mp3")
 };
 
 const OFFLINE_QUESTIONS = [
@@ -146,7 +146,16 @@ function App() {
   };
 
   const playSound = (name) => {
-    try { SOUNDS[name].currentTime = 0; SOUNDS[name].play(); } catch(e){}
+    try {
+      const audio = SOUNDS[name];
+      if (audio) {
+        audio.currentTime = 0;
+        audio.play().catch(err => {
+          // Silent catch for autoplay policies or broken sources
+          console.warn(`Audio play failed for ${name}:`, err.message);
+        });
+      }
+    } catch(e) {}
   };
 
   const triggerHaptic = (pattern = 50) => {
