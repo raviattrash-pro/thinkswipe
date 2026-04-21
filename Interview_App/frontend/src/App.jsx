@@ -1733,6 +1733,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [backendReady, setBackendReady] = useState(false);
   const [offlineMode, setOfflineMode] = useState(false);
+  const [backendToast, setBackendToast] = useState(null); // null | 'connecting' | 'online' | 'offline'
   
   // Phase 2 New State
   const [showDaily, setShowDaily] = useState(false);
@@ -1776,6 +1777,8 @@ function App() {
   const [countdown, setCountdown] = useState(10);
   const [slideDir, setSlideDir] = useState(null);
   const touchStartY = useRef(null);
+  const retryIntervalRef = useRef(null);
+  const isFetchingRef = useRef(false); // ref-based guard to avoid stale closure in polling
 
   const textareaRef = useRef(null);
 
@@ -1803,22 +1806,37 @@ function App() {
     if ("vibrate" in navigator) navigator.vibrate(pattern);
   };
 
-  const loadFeed = async (reset = false) => {
-    if (isFetchingMore) return;
-    if (reset) { setIsLoading(true); setPage(0); setQuestions([]); }
-    else setIsFetchingMore(true);
+  // ── Graceful background fetch from backend ──────────────────────────
+  const tryFetchFromBackend = async ({ reset = false, silent = false } = {}) => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
+
+    if (!silent) {
+      if (reset) { setIsLoading(true); setPage(0); setQuestions([]); }
+      else setIsFetchingMore(true);
+    }
+
+    // If we currently have no questions yet (very first load), show offline immediately
+    // so the shimmer never hangs — backend fetch continues in background.
+    const needsInstantFallback = reset;
+    if (needsInstantFallback) {
+      // Show offline questions right away so UI is never blank/shimmer-stuck
+      setOfflineMode(true);
+      setQuestions(OFFLINE_QUESTIONS);
+      setIsLoading(false);
+      if (!silent) setBackendToast("connecting");
+    }
 
     try {
       let data;
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error("Timeout")), 2000)
+      // Give the backend more time on a background attempt (5s), faster on silent retry
+      const timeout = silent ? 8000 : 5000;
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Timeout")), timeout)
       );
 
       if (activeCompany !== "All") {
-        data = await Promise.race([
-          fetchByCompany(activeCompany),
-          timeoutPromise
-        ]);
+        data = await Promise.race([fetchByCompany(activeCompany), timeoutPromise]);
         setHasMore(false);
       } else {
         data = await Promise.race([
@@ -1829,21 +1847,69 @@ function App() {
         setHasMore(data.length === 20);
       }
 
-      setQuestions(prev => reset ? data : [...prev, ...data]);
-      setBackendReady(true);
-      setOfflineMode(false);
+      if (data && data.length > 0) {
+        // ✅ Backend is back — gracefully swap in live questions
+        setQuestions(prev => reset ? data : [...prev, ...data]);
+        setBackendReady(true);
+        const wasOffline = offlineMode;
+        setOfflineMode(false);
+
+        // Stop polling
+        if (retryIntervalRef.current) {
+          clearInterval(retryIntervalRef.current);
+          retryIntervalRef.current = null;
+        }
+
+        // Show "Live" toast only when recovering from offline
+        if (wasOffline || silent) {
+          setBackendToast("online");
+          setTimeout(() => setBackendToast(null), 4000);
+        } else {
+          setBackendToast(null);
+        }
+      }
     } catch (e) {
-      if (reset) {
-        setOfflineMode(true);
-        setQuestions(OFFLINE_QUESTIONS);
+      // Backend still down — keep offline questions visible, show offline toast
+      if (needsInstantFallback || silent) {
+        setBackendToast("offline");
+        // Start polling every 30s to retry when backend comes back
+        if (!retryIntervalRef.current) {
+          retryIntervalRef.current = setInterval(() => {
+            tryFetchFromBackend({ reset: true, silent: true });
+          }, 30000);
+        }
+        // Auto-hide offline toast after 5s (poll will notify when back)
+        setTimeout(() => setBackendToast(prev => prev === "offline" ? null : prev), 5000);
       }
     } finally {
-      setIsLoading(false);
-      setIsFetchingMore(false);
+      if (!silent && !needsInstantFallback) setIsLoading(false);
+      if (!silent) setIsFetchingMore(false);
+      isFetchingRef.current = false;
     }
   };
 
-  useEffect(() => { loadFeed(true); }, [activeCompany]);
+  // Keep loadFeed as a thin wrapper so existing call-sites don't break
+  const loadFeed = async (reset = false) => {
+    if (isFetchingMore && !reset) return;
+    await tryFetchFromBackend({ reset, silent: false });
+  };
+
+  useEffect(() => {
+    // Clear any running retry poller when company filter changes
+    if (retryIntervalRef.current) {
+      clearInterval(retryIntervalRef.current);
+      retryIntervalRef.current = null;
+    }
+    isFetchingRef.current = false;
+    loadFeed(true);
+    // Cleanup polling on unmount / filter change
+    return () => {
+      if (retryIntervalRef.current) {
+        clearInterval(retryIntervalRef.current);
+        retryIntervalRef.current = null;
+      }
+    };
+  }, [activeCompany]);
 
   // PWA Install Prompt
   useEffect(() => {
@@ -2010,6 +2076,15 @@ function App() {
       onTouchEnd={handleTouchEnd}
     >
       {isLoading && <ShimmerCard />}
+
+      {/* ── Backend Status Toast ── */}
+      {backendToast && (
+        <div className={`backend-toast backend-toast--${backendToast}`}>
+          {backendToast === "connecting" && <><span className="toast-spinner">⏳</span> Connecting to live questions…</>}
+          {backendToast === "online"     && <><span>✅</span> Live questions loaded!</>}
+          {backendToast === "offline"    && <><span>📶</span> Offline mode — using local questions</>}
+        </div>
+      )}
       
       {!isLoading && (
         <main className={`feed-item ${slideDir ? `slide-${slideDir}` : ""}`}>

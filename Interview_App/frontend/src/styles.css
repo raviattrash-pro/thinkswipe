@@ -2247,3 +2247,69 @@ body {
   box-shadow: 0 0 10px rgba(254, 44, 85, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
+
+/* ====================================================
+   BACKEND STATUS TOAST
+   Slides in from top, shows connection state
+   ==================================================== */
+.backend-toast {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 99px;
+  font-family: var(--primary-font);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  white-space: nowrap;
+  animation: toastSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  pointer-events: none;
+}
+
+/* Connecting state — amber/yellow */
+.backend-toast--connecting {
+  background: rgba(255, 193, 7, 0.18);
+  border: 1px solid rgba(255, 193, 7, 0.5);
+  color: #ffc107;
+}
+
+/* Back online state — teal/cyan */
+.backend-toast--online {
+  background: rgba(37, 244, 238, 0.15);
+  border: 1px solid rgba(37, 244, 238, 0.5);
+  color: var(--tiktok-cyan);
+  box-shadow: 0 8px 32px rgba(37, 244, 238, 0.2);
+}
+
+/* Offline fallback state — red */
+.backend-toast--offline {
+  background: rgba(254, 44, 85, 0.15);
+  border: 1px solid rgba(254, 44, 85, 0.4);
+  color: var(--tiktok-red);
+}
+
+@keyframes toastSlideIn {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(-20px) scale(0.9); }
+  100% { opacity: 1; transform: translateX(-50%) translateY(0)     scale(1);   }
+}
+
+/* Spinner for "connecting" state */
+.toast-spinner {
+  display: inline-block;
+  animation: spinnerRotate 1.4s linear infinite;
+}
+
+@keyframes spinnerRotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
